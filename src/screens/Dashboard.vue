@@ -1,5 +1,17 @@
-<script lang="ts"></script>
+<script lang="ts">
+import { defineComponent } from 'vue'
+import AppHeader from '../components/AppHeader.vue'
+
+export default defineComponent({
+  components: {
+    AppHeader,
+  },
+})
+</script>
 
 <template>
-  <p>Dashboard</p>
+  <div>
+    <AppHeader />
+    <p>Dashboard</p>
+  </div>
 </template>
