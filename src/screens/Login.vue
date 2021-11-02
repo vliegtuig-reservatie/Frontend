@@ -11,17 +11,16 @@ export default defineComponent({
 
 <template>
   <AppHeader login />
-  <div class="m-4 sm:m-0">
+  <div class="mx-4">
     <div
       class="
         relative
         mx-auto
         max-w-sm
         p-6
-        pt-10
+        pt-20
         sm:p-10 sm:pt-20
-        -mt-10
-        sm:-mt-12
+        -mt-12
         rounded-3xl
         bg-white
         shadow
