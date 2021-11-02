@@ -38,7 +38,7 @@ export default defineComponent({
         fill="url(#linear-gradient)"
       />
     </svg>
-    <div v-if="login" class="absolute w-24 top-12">
+    <div v-if="login" class="absolute w-32 lg:top-12 top-4">
       <img src="../assets/logo.png" alt="" />
     </div>
     <div

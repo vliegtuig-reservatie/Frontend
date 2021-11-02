@@ -7,7 +7,24 @@ module.exports = {
   darkMode: 'media', // or 'class'
 
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        nunito: ['"Nunito"', 'sans-serif'],
+      },
+      colors: {
+        blue: {
+          xlight: '#F5F8FF',
+          light: '#EAF0FF',
+          DEFAULT: '#67A4FF',
+          dark: '#277BFF',
+        },
+        neutral: {
+          xlight:'#00335680',
+          light: '#003356CC',
+          DEFAULT: '#003356',
+        }
+      },
+    },
   },
 
   variants: {
