@@ -1,5 +1,5 @@
 <template>
-  <div class="font-nunito">
+  <div class="font-nunito text-neutral">
     <RouterView />
   </div>
 </template>

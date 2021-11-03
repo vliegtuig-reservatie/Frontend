@@ -1,10 +1,35 @@
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, reactive } from 'vue'
+import { useRouter } from 'vue-router'
 import AppHeader from '../components/AppHeader.vue'
+import useFirebase from '../composables/useFirebase'
+import User from '../interfaces/User'
 
 export default defineComponent({
   components: {
     AppHeader,
+  },
+
+  setup() {
+    const { login } = useFirebase()
+    const { push } = useRouter()
+
+    const userInput: User = reactive({ email: '', password: '' })
+
+    const loginUser = (event: Event) => {
+      event.preventDefault()
+
+      if (userInput.email && userInput.password) {
+        login(userInput.email, userInput.password).then((success: boolean) => {
+          if (success) push('/')
+        })
+      }
+    }
+
+    return {
+      loginUser,
+      userInput,
+    }
   },
 })
 </script>
@@ -27,8 +52,9 @@ export default defineComponent({
         z-10
       "
     >
-      <form action="">
+      <form @submit="loginUser($event)">
         <input
+          v-model="userInput.email"
           type="text"
           id="email"
           class="
@@ -48,6 +74,7 @@ export default defineComponent({
           placeholder="Email address"
         />
         <input
+          v-model="userInput.password"
           type="password"
           id="password"
           class="
@@ -73,7 +100,7 @@ export default defineComponent({
             text-white
             px-4
             py-3.5
-            mt-64
+            mt-52
             rounded-xl
             w-full
             font-bold
@@ -110,5 +137,11 @@ export default defineComponent({
         </button>
       </form>
     </div>
+  </div>
+  <div class="relative mx-auto max-w-sm text-center py-5">
+    <span
+      >Don't have an account?
+      <RouterLink to="/register" class="text-blue">Sign up</RouterLink></span
+    >
   </div>
 </template>

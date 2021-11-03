@@ -1,18 +1,36 @@
 // router.ts
-import { createRouter, createWebHistory, Router } from 'vue-router'
+import {
+  createRouter,
+  createWebHistory,
+  NavigationGuardNext,
+  RouteLocationNormalized,
+  Router,
+} from 'vue-router'
+import useFirebase from '../composables/useFirebase'
+
+const { user } = useFirebase()
 
 const routes = [
   {
     path: '/',
     component: () => import('../screens/Dashboard.vue'),
+    meta: {
+      logInRequired: true,
+    },
   },
   {
     path: '/login',
     component: () => import('../screens/Login.vue'),
+    meta: {
+      logInRequired: false,
+    },
   },
   {
     path: '/register',
     component: () => import('../screens/Register.vue'),
+    meta: {
+      logInRequired: false,
+    },
   },
 ]
 
@@ -21,24 +39,22 @@ const router: Router = createRouter({
   routes,
 })
 
-// Route guard
-// router.beforeEach(
-//   (
-//     route: RouteLocationNormalized,
-//     from: RouteLocationNormalized,
-//     next: NavigationGuardNext,
-//   ) => {
-//     // Check a property that you added to the route meta
-//     if (route.meta.SOMETHING) {
-//       // If user is allowed
-//       if (userIsAllowed) {
-//         next()
-//       // Else redirect to error or path, etc.
-//       } else {
-//         router.push(from.path)
-//       }
-//     }
-//   },
-// )
+router.beforeEach(
+  (
+    to: RouteLocationNormalized,
+    from: RouteLocationNormalized,
+    next: NavigationGuardNext,
+  ) => {
+    if (to.meta.logInRequired && to.meta.logInRequired === true) {
+      if (user.value) {
+        next()
+      } else {
+        next('/login')
+      }
+    } else {
+      next()
+    }
+  },
+)
 
 export default router

@@ -1,10 +1,58 @@
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, reactive } from 'vue'
+import { useRouter } from 'vue-router'
 import AppHeader from '../components/AppHeader.vue'
+import useFirebase from '../composables/useFirebase'
+import User from '../interfaces/User'
 
 export default defineComponent({
   components: {
     AppHeader,
+  },
+
+  setup() {
+    const { createUser } = useFirebase()
+    const { push } = useRouter()
+
+    const userInput: User = reactive({
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+    })
+
+    const registerAccount = (event: Event) => {
+      event.preventDefault()
+
+      if (
+        userInput.firstName &&
+        userInput.lastName &&
+        userInput.email &&
+        userInput.password &&
+        userInput.confirmPassword
+      ) {
+        if (userInput.password === userInput.confirmPassword) {
+          createUser(
+            userInput.firstName,
+            userInput.lastName,
+            userInput.email as string,
+            userInput.password as string,
+          ).then((success: boolean) => {
+            if (success) push('/')
+          })
+        } else {
+          console.log('Passwords do not match')
+        }
+      } else {
+        console.log('Invalid input', userInput)
+      }
+    }
+
+    return {
+      registerAccount,
+      userInput,
+    }
   },
 })
 </script>
@@ -27,9 +75,10 @@ export default defineComponent({
         z-10
       "
     >
-      <form action="">
+      <form @submit="registerAccount($event)">
         <div class="flex justify-between gap-4">
           <input
+            v-model="userInput.firstName"
             type="text"
             id="firstname"
             class="
@@ -49,6 +98,7 @@ export default defineComponent({
             placeholder="First name"
           />
           <input
+            v-model="userInput.lastName"
             type="text"
             id="lastname"
             class="
@@ -69,6 +119,7 @@ export default defineComponent({
           />
         </div>
         <input
+          v-model="userInput.email"
           type="text"
           id="email"
           class="
@@ -88,6 +139,7 @@ export default defineComponent({
           placeholder="Email address"
         />
         <input
+          v-model="userInput.password"
           type="password"
           id="password"
           class="
@@ -107,6 +159,7 @@ export default defineComponent({
           placeholder="Password"
         />
         <input
+          v-model="userInput.confirmPassword"
           type="password"
           id="confirm_password"
           class="
@@ -131,7 +184,7 @@ export default defineComponent({
             text-white
             px-4
             py-3.5
-            mt-16
+            mt-14
             rounded-xl
             w-full
             font-bold
@@ -168,5 +221,11 @@ export default defineComponent({
         </button>
       </form>
     </div>
+  </div>
+  <div class="relative mx-auto max-w-sm text-center py-5">
+    <span
+      >Already have an account?
+      <RouterLink to="/login" class="text-blue">Log in</RouterLink></span
+    >
   </div>
 </template>

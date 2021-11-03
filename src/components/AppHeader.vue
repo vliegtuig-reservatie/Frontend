@@ -1,11 +1,30 @@
-<script>
+<script lang="ts">
 import { defineComponent } from 'vue'
+import { useRouter } from 'vue-router'
+import useFirebase from '../composables/useFirebase'
 
 export default defineComponent({
   props: {
     login: { type: Boolean },
   },
-  setup() {},
+  setup() {
+    const { user, logout } = useFirebase()
+    const { push } = useRouter()
+
+    const logOut = () => {
+      logout()
+        .then(() => {
+          push('/login')
+        })
+        .catch((error: Error) => {
+          console.error(error)
+        })
+    }
+    return {
+      user,
+      logOut,
+    }
+  },
 })
 </script>
 
@@ -74,7 +93,7 @@ export default defineComponent({
         >
           Account
         </p>
-        <p>Log out</p>
+        <button @click="logOut">Log out</button>
       </div>
     </div>
   </header>
