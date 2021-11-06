@@ -25,6 +25,9 @@ module.exports = {
         }
       },
     },
+    boxShadow: {
+      DEFAULT: '0 8px 16px 0 rgba(68, 117, 141, 0.08)'
+    }
   },
 
   variants: {

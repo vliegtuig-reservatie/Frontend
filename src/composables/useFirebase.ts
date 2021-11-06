@@ -1,8 +1,10 @@
 // Import the functions you need from the SDKs you need
-import { initializeApp } from 'firebase/app'
+import { FirebaseApp, FirebaseOptions, initializeApp } from 'firebase/app'
 import {
+  browserLocalPersistence,
   createUserWithEmailAndPassword,
   getAuth,
+  setPersistence,
   signInWithEmailAndPassword,
   signOut,
   User,
@@ -13,7 +15,7 @@ import { readonly, ref, Ref } from 'vue'
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
+const firebaseConfig: FirebaseOptions = {
   apiKey: 'AIzaSyDATgU6ZotKXNVo86MorMBxKK1gDYgmLbs',
   authDomain: 'vliegtuig-reservatie.firebaseapp.com',
   projectId: 'vliegtuig-reservatie',
@@ -24,8 +26,10 @@ const firebaseConfig = {
 }
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig)
+const app: FirebaseApp = initializeApp(firebaseConfig)
 const auth = getAuth()
+
+setPersistence(auth, browserLocalPersistence)
 
 const user: Ref<User | null> = ref(auth.currentUser)
 
@@ -36,7 +40,10 @@ export default () => {
         auth.onAuthStateChanged(async state => {
           if (state) {
             user.value = state
+            console.log(state)
             resolve(true)
+          } else {
+            resolve(false)
           }
         })
       } catch (error) {
@@ -87,9 +94,9 @@ export default () => {
 
   return {
     createUser,
+    restoreAuth,
     login,
     logout,
-    restoreAuth,
 
     user: readonly(user),
   }
