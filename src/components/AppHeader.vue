@@ -31,7 +31,7 @@ export default defineComponent({
 <template>
   <header class="flex items-center justify-center">
     <svg
-      class="w-full h-40"
+      class="w-full h-32 sm:h-40"
       viewBox="79.544 78.258 799.002 179.793"
       height="200.793"
       preserveAspectRatio="none"
@@ -61,7 +61,7 @@ export default defineComponent({
         transform="matrix(1, 0, 0, 1, -27.556749, 9.573202)"
       ></path>
     </svg>
-    <div v-if="login" class="absolute w-32 top-12">
+    <div v-if="login" class="absolute w-32 top-6 sm:top-12">
       <img src="../assets/logo.png" alt="" />
     </div>
     <div
@@ -74,11 +74,11 @@ export default defineComponent({
         max-w-7xl
         px-7
         text-white text-base
-        top-2
-        lg:text-xl lg:top-5
+        top-3
+        sm:text-xl sm:top-6
       "
     >
-      <div class="w-20 lg:w-24">
+      <div class="w-20 sm:w-24">
         <img src="../assets/logo.png" alt="" />
       </div>
       <div class="flex justify-between w-auto">
