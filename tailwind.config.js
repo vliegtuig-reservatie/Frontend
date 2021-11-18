@@ -27,6 +27,10 @@ module.exports = {
     },
     boxShadow: {
       DEFAULT: '0 8px 16px 0 rgba(68, 117, 141, 0.08)'
+    },
+    gridTemplateColumns: {
+      DEFAULT: '1fr 3fr 3fr 3fr 1fr',
+      small: 'repeat(2,minmax(0,1fr))'
     }
   },
 

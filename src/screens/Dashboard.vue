@@ -1,10 +1,12 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import AppHeader from '../components/AppHeader.vue'
+import FlightGrid from '../components/FlightGrid.vue'
 
 export default defineComponent({
   components: {
     AppHeader,
+    FlightGrid,
   },
 })
 </script>
@@ -27,7 +29,7 @@ export default defineComponent({
           z-10
         "
       >
-        <div class="flex justify-between gap-6">
+        <div class="flex flex-col lg:justify-between lg:flex-row gap-6">
           <div class="flex justify-between w-full">
             <input
               type="text"
@@ -140,6 +142,10 @@ export default defineComponent({
             />
           </div>
         </div>
+      </div>
+      <div class="mx-auto max-w-7xl p-6 sm:p-8">
+        <h1 class="text-2xl mb-8 font-bold">Flights</h1>
+        <FlightGrid />
       </div>
     </div>
   </div>
