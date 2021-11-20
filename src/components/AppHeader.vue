@@ -1,15 +1,40 @@
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, ref, Ref } from 'vue'
 import { useRouter } from 'vue-router'
 import useFirebase from '../composables/useFirebase'
+import useGraphQL from '../composables/useGraphQL'
+import UserModel from '../interfaces/User'
 
 export default defineComponent({
   props: {
     login: { type: Boolean },
   },
   setup() {
+    const { query } = useGraphQL()
     const { user, logout } = useFirebase()
     const { push } = useRouter()
+
+    const userData: Ref<UserModel[]> = ref([])
+
+    const getUserData = async () => {
+      const data = await query(
+        'getUserByUuid',
+        `query getUserByUuid ($uuid: String = "") {
+          getUserByUuid (uuid: $uuid) {
+            id
+            uuid
+            firstName
+            lastName
+            email
+          }
+        }`,
+        { uuid: user.value?.uid },
+      )
+
+      userData.value = data
+    }
+
+    getUserData()
 
     const logOut = () => {
       logout()
@@ -22,6 +47,7 @@ export default defineComponent({
     }
     return {
       user,
+      userData,
       logOut,
     }
   },
@@ -81,18 +107,35 @@ export default defineComponent({
       <div class="w-20 sm:w-24">
         <img src="../assets/logo.png" alt="" />
       </div>
-      <div class="flex justify-between w-auto">
-        <p
+      <div class="flex justify-between w-auto" v-if="user">
+        <div
           class="
             border border-white
             bg-black bg-opacity-5
-            px-2
-            mx-6
+            mx-3
+            sm:mx-6
             rounded-full
+            flex
+            items-center
           "
         >
-          Account
-        </p>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            height="24px"
+            viewBox="0 0 24 24"
+            width="24px"
+            fill="#ffffff"
+            class="w-7 sm:w-full px-1"
+          >
+            <path d="M0 0h24v24H0z" fill="none" />
+            <path
+              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"
+            />
+          </svg>
+          <p v-if="userData" class="pr-2">
+            {{ userData.firstName }}
+          </p>
+        </div>
         <button @click="logOut">Log out</button>
       </div>
     </div>

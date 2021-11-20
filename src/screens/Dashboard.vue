@@ -1,12 +1,50 @@
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, ref, Ref } from 'vue'
 import AppHeader from '../components/AppHeader.vue'
 import FlightGrid from '../components/FlightGrid.vue'
+import useGraphQL from '../composables/useGraphQL'
+import FlightModel from '../interfaces/Flight'
 
 export default defineComponent({
   components: {
     AppHeader,
     FlightGrid,
+  },
+
+  setup() {
+    const { query } = useGraphQL()
+
+    const flights: Ref<FlightModel[]> = ref([])
+
+    const getFlights = async () => {
+      const data = await query(
+        'getFlights',
+        `query getFlights {
+          getFlights {
+            id
+            arrivalTime
+            departureTime
+            departureLocation {
+              id
+            }
+            arrivalLocation {
+              id
+            }
+            plane {
+              id
+            }
+          }
+        }`,
+      )
+
+      flights.value = data
+    }
+
+    getFlights()
+
+    return {
+      flights,
+    }
   },
 })
 </script>
@@ -145,7 +183,7 @@ export default defineComponent({
       </div>
       <div class="mx-auto max-w-7xl p-6 sm:p-8">
         <h1 class="text-2xl mb-8 font-bold">Flights</h1>
-        <FlightGrid />
+        <FlightGrid v-for="flight of flights" :key="flight.id" :data="flight" />
       </div>
     </div>
   </div>

@@ -2,26 +2,69 @@
 import { defineComponent } from 'vue'
 
 export default defineComponent({
-  setup() {},
+  props: {
+    data: {
+      type: Object as any,
+    },
+  },
+  setup(props) {
+    return {
+      props,
+    }
+  },
 })
 </script>
 
 <template>
   <div class="mb-6">
     <div class="grid grid-cols-small sm:grid-cols gap-3 sm:gap-6">
-      <img
-        src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/TUI_Logo_2016.svg/2560px-TUI_Logo_2016.svg.png"
-        class="flex self-center w-16"
-      />
+      <img src="/img/TUI.png" class="flex self-center w-16" />
       <div class="flex flex-col">
-        <p class="font-bold">2:30 PM - 7:59 PM</p>
+        <p class="font-bold">
+          {{
+            new Date(props.data.departureTime).toLocaleString('en-US', {
+              hour: 'numeric',
+              minute: 'numeric',
+              hour12: true,
+              timeZone: 'UTC',
+            }) +
+            ' - ' +
+            new Date(props.data.arrivalTime).toLocaleString('en-US', {
+              hour: 'numeric',
+              minute: 'numeric',
+              hour12: true,
+              timeZone: 'UTC',
+            })
+          }}
+        </p>
         <p class="font-bold text-sm text-neutral-xlight">TUI</p>
       </div>
       <div class="flex flex-col">
-        <p class="font-bold">11h 29m</p>
+        <p class="font-bold">
+          {{
+            new Date(
+              new Date(props.data.arrivalTime) -
+                new Date(props.data.departureTime),
+            ).getHours() +
+            ' hours ' +
+            new Date(
+              new Date(props.data.arrivalTime) -
+                new Date(props.data.departureTime),
+            ).getMinutes() +
+            ' minutes'
+          }}
+        </p>
         <p class="font-bold text-sm text-neutral-xlight">PAR-NY</p>
       </div>
-      <p class="flex items-center font-bold">Aug 2, Monday</p>
+      <p class="flex items-center font-bold">
+        {{
+          new Date(props.data.arrivalTime).toLocaleString('en-US', {
+            day: 'numeric',
+            weekday: 'long',
+            month: 'long',
+          })
+        }}
+      </p>
       <button
         class="
           bg-blue

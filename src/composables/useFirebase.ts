@@ -7,9 +7,12 @@ import {
   setPersistence,
   signInWithEmailAndPassword,
   signOut,
+  updateProfile,
   User,
 } from 'firebase/auth'
 import { readonly, ref, Ref } from 'vue'
+import useGraphQL from './useGraphQL'
+
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -34,6 +37,7 @@ setPersistence(auth, browserLocalPersistence)
 const user: Ref<User | null> = ref(auth.currentUser)
 
 export default () => {
+  const { query } = useGraphQL()
   const restoreAuth = (): Promise<boolean> => {
     return new Promise((resolve, reject) => {
       try {
@@ -62,6 +66,26 @@ export default () => {
       createUserWithEmailAndPassword(auth, email, password)
         .then(async userCredential => {
           user.value = userCredential.user
+          const response = await query(
+            `createUser`,
+            `mutation createUser($data: UserInput = {uuid: "", firstName: "", lastName: ""}) {
+            createUser(data: $data) {
+              id
+              uuid
+              firstName
+              lastName
+              email
+            }
+          }`,
+            {
+              data: {
+                uuid: user.value?.uid,
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+              },
+            },
+          )
           resolve(true)
         })
         .catch(error => {
