@@ -18,7 +18,10 @@ export default defineComponent({
 <template>
   <div class="mb-6">
     <div class="grid grid-cols-small sm:grid-cols gap-3 sm:gap-6">
-      <img src="/img/TUI.png" class="flex self-center w-16" />
+      <img
+        :src="'/img/' + props.data.plane.agency + '.png'"
+        class="flex self-center w-16"
+      />
       <div class="flex flex-col">
         <p class="font-bold">
           {{
@@ -37,7 +40,9 @@ export default defineComponent({
             })
           }}
         </p>
-        <p class="font-bold text-sm text-neutral-xlight">TUI</p>
+        <p class="font-bold text-sm text-neutral-xlight">
+          {{ props.data.plane.agency }}
+        </p>
       </div>
       <div class="flex flex-col">
         <p class="font-bold">
@@ -54,7 +59,11 @@ export default defineComponent({
             ' minutes'
           }}
         </p>
-        <p class="font-bold text-sm text-neutral-xlight">PAR-NY</p>
+        <p class="font-bold text-sm text-neutral-xlight">
+          {{ props.data.departureLocation.IATACode }}-{{
+            props.data.arrivalLocation.IATACode
+          }}
+        </p>
       </div>
       <p class="flex items-center font-bold">
         {{

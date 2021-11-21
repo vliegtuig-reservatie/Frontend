@@ -24,14 +24,16 @@ export default defineComponent({
             id
             arrivalTime
             departureTime
-            departureLocation {
-              id
-            }
             arrivalLocation {
-              id
+              name
+              IATACode
+            }
+            departureLocation {
+              name
+              IATACode
             }
             plane {
-              id
+              agency
             }
           }
         }`,
