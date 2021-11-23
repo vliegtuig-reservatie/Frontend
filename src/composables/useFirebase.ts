@@ -68,10 +68,9 @@ export default () => {
           user.value = userCredential.user
           const response = await query(
             `createUser`,
-            `mutation createUser($data: UserInput = {uuid: "", firstName: "", lastName: ""}) {
+            `mutation createUser($data: UserInput = {id: "", firstName: "", lastName: "", email: ""}) {
             createUser(data: $data) {
               id
-              uuid
               firstName
               lastName
               email
@@ -79,7 +78,7 @@ export default () => {
           }`,
             {
               data: {
-                uuid: user.value?.uid,
+                id: user.value?.uid,
                 firstName: firstName,
                 lastName: lastName,
                 email: email,

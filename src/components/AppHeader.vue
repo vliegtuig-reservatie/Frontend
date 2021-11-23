@@ -18,17 +18,16 @@ export default defineComponent({
 
     const getUserData = async () => {
       const data = await query(
-        'getUserByUuid',
-        `query getUserByUuid ($uuid: String = "") {
-          getUserByUuid (uuid: $uuid) {
+        'getUserById',
+        `query getUserById ($id: String = "") {
+          getUserById (id: $id) {
             id
-            uuid
             firstName
             lastName
             email
           }
         }`,
-        { uuid: user.value?.uid },
+        { id: user.value?.uid },
       )
 
       userData.value = data
