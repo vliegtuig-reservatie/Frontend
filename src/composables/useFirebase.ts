@@ -44,7 +44,6 @@ export default () => {
         auth.onAuthStateChanged(async state => {
           if (state) {
             user.value = state
-            console.log(state)
             resolve(true)
           } else {
             resolve(false)

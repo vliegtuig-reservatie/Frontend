@@ -10,6 +10,5 @@ const { restoreAuth } = useFirebase()
 
 await restoreAuth()
 
-console.log('mount app')
 app.use(router)
 app.mount('#app')

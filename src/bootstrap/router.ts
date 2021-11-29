@@ -32,6 +32,13 @@ const routes = [
       logInRequired: false,
     },
   },
+  {
+    path: '/booking/:id',
+    component: () => import('../screens/Booking.vue'),
+    meta: {
+      logInRequired: true,
+    },
+  },
 ]
 
 const router: Router = createRouter({

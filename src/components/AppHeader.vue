@@ -50,6 +50,12 @@ export default defineComponent({
       logOut,
     }
   },
+
+  data() {
+    return {
+      dropdownOpen: false,
+    }
+  },
 })
 </script>
 
@@ -103,39 +109,100 @@ export default defineComponent({
         sm:text-xl sm:top-6
       "
     >
-      <div class="w-20 sm:w-24">
+      <RouterLink to="/" class="w-20 sm:w-24">
         <img src="../assets/logo.png" alt="" />
-      </div>
+      </RouterLink>
       <div class="flex justify-between w-auto" v-if="user">
-        <div
-          class="
-            border border-white
-            bg-black bg-opacity-5
-            mx-3
-            sm:mx-6
-            rounded-full
-            flex
-            items-center
-          "
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            height="24px"
-            viewBox="0 0 24 24"
-            width="24px"
-            fill="#ffffff"
-            class="w-7 sm:w-full px-1"
+        <div class="relative">
+          <button
+            @click="dropdownOpen = !dropdownOpen"
+            class="
+              border border-white
+              bg-black bg-opacity-5
+              ml-3
+              sm:ml-6
+              rounded-full
+              flex
+              items-center
+            "
+            aria-expanded="true"
+            aria-haspopup="true"
           >
-            <path d="M0 0h24v24H0z" fill="none" />
-            <path
-              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"
-            />
-          </svg>
-          <p v-if="userData" class="pr-2">
-            {{ userData.firstName }}
-          </p>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="24px"
+              viewBox="0 0 24 24"
+              width="24px"
+              fill="#ffffff"
+              class="w-7 sm:w-full px-1"
+            >
+              <path d="M0 0h24v24H0z" fill="none" />
+              <path
+                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"
+              />
+            </svg>
+            <p v-if="userData" class="pr-2">
+              {{ userData.firstName }}
+            </p>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="24px"
+              viewBox="0 0 24 24"
+              fill="#ffffff"
+              class="w-5 sm:w-full"
+            >
+              <path d="M0 0h24v24H0V0z" fill="none" />
+              <path d="M7 10l5 5 5-5H7z" />
+            </svg>
+          </button>
+          <button
+            v-if="dropdownOpen"
+            @click="dropdownOpen = false"
+            tabindex="-1"
+            class="fixed inset-0 h-full w-full opacity-0 cursor-default z-20"
+          ></button>
+          <div
+            v-if="dropdownOpen"
+            class="
+              absolute
+              mt-2
+              w-48
+              right-0
+              bg-white
+              drop-shadow
+              text-neutral text-base
+              font-medium
+              rounded-lg
+              overflow-hidden
+              z-20
+            "
+          >
+            <RouterLink to="/" class="block px-3 py-2 hover:bg-blue-xlight"
+              >Account settings</RouterLink
+            >
+            <RouterLink to="/" class="block px-3 py-2 hover:bg-blue-xlight"
+              >My bookings</RouterLink
+            >
+            <RouterLink to="/" class="block px-3 py-2 hover:bg-blue-xlight"
+              >My reviews</RouterLink
+            >
+            <button
+              @click="logOut"
+              class="
+                block
+                px-3
+                py-3
+                w-full
+                font-semibold
+                border-t-2 border-blue-xlight
+                hover:bg-blue-xlight
+                text-left
+              "
+            >
+              Sign out
+            </button>
+          </div>
         </div>
-        <button @click="logOut">Log out</button>
       </div>
     </div>
   </header>
