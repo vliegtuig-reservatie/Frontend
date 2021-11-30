@@ -94,6 +94,7 @@ export default defineComponent({
           sm:col-span-1 sm:my-0
           items-center
           hover:bg-blue-dark
+          transition-all
         "
       >
         BOOK
@@ -109,6 +110,7 @@ export default defineComponent({
             w-6
             fill-current
             text-white
+            transition-all
           "
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"

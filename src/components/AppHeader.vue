@@ -124,9 +124,9 @@ export default defineComponent({
               rounded-full
               flex
               items-center
+              hover:bg-opacity-0
+              transition-all
             "
-            aria-expanded="true"
-            aria-haspopup="true"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -161,47 +161,52 @@ export default defineComponent({
             tabindex="-1"
             class="fixed inset-0 h-full w-full opacity-0 cursor-default z-20"
           ></button>
-          <div
-            v-if="dropdownOpen"
-            class="
-              absolute
-              mt-2
-              w-48
-              right-0
-              bg-white
-              drop-shadow
-              text-neutral text-base
-              font-medium
-              rounded-lg
-              overflow-hidden
-              z-20
-            "
+          <transition
+            enter-active-class="transform opacity-0 duration-200"
+            enter-to-class="opacity-100"
           >
-            <RouterLink to="/" class="block px-3 py-2 hover:bg-blue-xlight"
-              >Account settings</RouterLink
-            >
-            <RouterLink to="/" class="block px-3 py-2 hover:bg-blue-xlight"
-              >My bookings</RouterLink
-            >
-            <RouterLink to="/" class="block px-3 py-2 hover:bg-blue-xlight"
-              >My reviews</RouterLink
-            >
-            <button
-              @click="logOut"
+            <div
+              v-if="dropdownOpen"
               class="
-                block
-                px-3
-                py-3
-                w-full
-                font-semibold
-                border-t-2 border-blue-xlight
-                hover:bg-blue-xlight
-                text-left
+                absolute
+                mt-2
+                w-48
+                right-0
+                bg-white
+                drop-shadow
+                text-neutral text-base
+                font-medium
+                rounded-lg
+                overflow-hidden
+                z-20
               "
             >
-              Sign out
-            </button>
-          </div>
+              <RouterLink to="/" class="block px-3 py-2 hover:bg-blue-xlight"
+                >Account settings</RouterLink
+              >
+              <RouterLink to="/" class="block px-3 py-2 hover:bg-blue-xlight"
+                >My bookings</RouterLink
+              >
+              <RouterLink to="/" class="block px-3 py-2 hover:bg-blue-xlight"
+                >My reviews</RouterLink
+              >
+              <button
+                @click="logOut"
+                class="
+                  block
+                  px-3
+                  py-3
+                  w-full
+                  font-semibold
+                  border-t-2 border-blue-xlight
+                  hover:bg-blue-xlight
+                  text-left
+                "
+              >
+                Sign out
+              </button>
+            </div>
+          </transition>
         </div>
       </div>
     </div>
