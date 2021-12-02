@@ -38,10 +38,6 @@ export default defineComponent({
               name
               IATACode
             }
-            plane {
-              id
-              agency
-            }
           }
         }`,
         { id: flightId.value },
@@ -67,7 +63,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <div>
+  <div v-if="flight">
     <AppHeader />
     <div class="mx-4">
       <div
@@ -338,7 +334,12 @@ export default defineComponent({
           </div>
         </div>
         <RouterLink
-          to="/"
+          :to="{
+            name: 'Seats',
+            query: {
+              passengers: passengerCount,
+            },
+          }"
           class="
             bg-blue
             text-white

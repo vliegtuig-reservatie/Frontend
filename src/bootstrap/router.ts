@@ -5,17 +5,25 @@ import {
   NavigationGuardNext,
   RouteLocationNormalized,
   Router,
+  RouteRecordRaw,
 } from 'vue-router'
 import useFirebase from '../composables/useFirebase'
 
 const { user } = useFirebase()
 
-const routes = [
+const routes: RouteRecordRaw[] = [
   {
     path: '/',
     component: () => import('../screens/Dashboard.vue'),
     meta: {
       logInRequired: true,
+    },
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    component: () => import('../screens/NotFound.vue'),
+    meta: {
+      logInRequired: false,
     },
   },
   {
@@ -37,6 +45,21 @@ const routes = [
     component: () => import('../screens/Booking.vue'),
     meta: {
       logInRequired: true,
+    },
+  },
+  {
+    path: '/booking/:id/seats',
+    component: () => import('../screens/Seats.vue'),
+    name: 'Seats',
+    meta: {
+      logInRequired: true,
+    },
+    beforeEnter: (to, from, next) => {
+      if (to.query.passengers === undefined) {
+        next('/404')
+      } else {
+        next()
+      }
     },
   },
 ]
