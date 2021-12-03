@@ -4,7 +4,11 @@ export default interface Flight {
   departureLocation: string
   arrivalLocation: string
   stops: string[]
-  plane: string
+  plane: {
+    id: string
+    rowCount: number
+    columncount: number
+  }
   bookedSeats: string[]
   reviews: string[]
 }

@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent, ref, Ref } from 'vue'
+import { defineComponent, onMounted, ref, Ref } from 'vue'
 import { useRoute } from 'vue-router'
 import AppHeader from '../components/AppHeader.vue'
 import useGraphQL from '../composables/useGraphQL'
@@ -23,20 +23,21 @@ export default defineComponent({
     )
 
     const seats = ref<Flight>()
-    const selectedSeats = ref<any[]>([])
+    const generatedSeats = ref<any[]>([])
+    const selectedSeat = ref()
 
     const getSeatCount = async () => {
       const data = await query(
         'getFlightById',
         `query getFlightById ($id: String = "") {
-          getFlightById (id: $id) {
-            plane {
-              id
-              rowCount
-              columncount
+            getFlightById (id: $id) {
+              plane {
+                id
+                rowCount
+                columncount
+              }
             }
-          }
-        }`,
+          }`,
         { id: flightId.value },
       )
 
@@ -45,36 +46,104 @@ export default defineComponent({
 
     getSeatCount()
 
-    const selectSeat = (row: number, column: number, e: any) => {
-      if (selectedSeats.value.some(e => e.row === row && e.column === column)) {
-        const index = selectedSeats.value.findIndex(
-          e => e.row === row && e.column === column,
-        )
-        if (index > -1) {
-          selectedSeats.value.splice(index, 1)
+    const getSeat = (r: any, c: any) => {
+      for (let i = 0; i < generatedSeats.value.length; ++i) {
+        if (
+          generatedSeats.value[i].position.r == r &&
+          generatedSeats.value[i].position.c == c
+        ) {
+          return generatedSeats.value[i]
         }
-        e.target.classList.toggle('bg-blue-light')
-        e.target.classList.toggle('bg-blue')
-      } else if (selectedSeats.value.length < parseInt(passengerCount.value!)) {
-        selectedSeats.value.push({ row: row, column: column })
-        e.target.classList.toggle('bg-blue-light')
-        e.target.classList.toggle('bg-blue')
+      }
+      return null
+    }
+
+    const onSeatSelected = (r: any, c: any) => {
+      const takenSeats = generatedSeats.value.filter(
+        e => e.status == 'SELECTED',
+      )
+
+      if (selectedSeat.value == getSeat(r, c)) {
+        selectedSeat.value = null
+      } else {
+        selectedSeat.value = getSeat(r, c)
+      }
+
+      if (selectedSeat.value != null) {
+        for (let i = 0; i < generatedSeats.value.length; ++i) {
+          if (
+            generatedSeats.value[i].position.r ==
+              selectedSeat.value.position.r &&
+            generatedSeats.value[i].position.c == selectedSeat.value.position.c
+          ) {
+            if (generatedSeats.value[i].status == 'FREE') {
+              if (takenSeats.length < parseInt(passengerCount.value!)) {
+                generatedSeats.value[i].status = 'SELECTED'
+                selectedSeat.value = null
+              }
+            } else if (generatedSeats.value[i].status == 'SELECTED') {
+              generatedSeats.value[i].status = 'FREE'
+              selectedSeat.value = null
+            }
+            break
+          }
+        }
       }
     }
+
+    const classifier = (r: any, c: any) => {
+      let seat = getSeat(r, c)
+      if (seat != null) {
+        if (selectedSeat.value != seat) {
+          switch (seat.status) {
+            case 'FREE':
+              return 'bg-blue-light'
+            case 'TAKEN':
+              return 'bg-black'
+            case 'SELECTED':
+              return 'bg-blue'
+          }
+        } else {
+          return 'bg-blue-light'
+        }
+      }
+    }
+
+    onMounted(() => {
+      console.log(seats.value?.plane.rowCount)
+
+      const generateSeats = () => {
+        if (seats.value != null) {
+          for (let y = 1; y <= seats.value?.plane.rowCount; ++y) {
+            for (let x = 1; x <= seats.value?.plane.columncount; ++x) {
+              generatedSeats.value.push({
+                position: { r: y, c: x },
+                status: 'FREE',
+              })
+            }
+          }
+        }
+      }
+
+      generateSeats()
+      getSeat(1, 2)
+    })
 
     return {
       flightId,
       passengerCount,
       seats,
-      selectSeat,
-      selectedSeats,
+      generatedSeats,
+      getSeat,
+      onSeatSelected,
+      classifier,
     }
   },
 })
 </script>
 
 <template>
-  <div v-if="seats">
+  <div>
     <AppHeader />
     <div class="mx-4">
       <div
@@ -106,10 +175,23 @@ export default defineComponent({
               d="M10.02 6L8.61 7.41 13.19 12l-4.58 4.59L10.02 18l6-6-6-6z"
             />
           </svg>
-          <p class="text-neutral-xlight pointer-events-none">Booking</p>
+          <RouterLink :to="'/booking/' + flightId">Booking</RouterLink>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            height="24px"
+            viewBox="0 0 24 24"
+            class="w-5"
+            fill="#000000"
+          >
+            <path d="M0 0h24v24H0V0z" fill="none" />
+            <path
+              d="M10.02 6L8.61 7.41 13.19 12l-4.58 4.59L10.02 18l6-6-6-6z"
+            />
+          </svg>
+          <p class="text-neutral-xlight pointer-events-none">Seats</p>
         </div>
         <h1 class="text-2xl mb-4 font-bold">
-          Choose seats for {{ passengerCount }} passengers
+          Choose seats for {{ passengerCount }} passenger(s)
         </h1>
         <table class="mx-auto">
           <tr v-for="(row, i) in seats.plane.rowCount" :key="i">
@@ -119,13 +201,13 @@ export default defineComponent({
               class="px-2"
             >
               <button
-                @click="e => selectSeat(row, column, e)"
+                @click="onSeatSelected(row, column)"
+                :class="classifier(row, column)"
                 class="
                   w-16
                   h-16
                   border-2 border-blue-light
                   rounded-t-3xl rounded-b-lg
-                  bg-blue-light
                   hover:border-2 hover:border-blue
                 "
               ></button>
