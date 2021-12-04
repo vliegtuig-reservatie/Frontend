@@ -2,6 +2,7 @@
 import { defineComponent, onMounted, ref, Ref } from 'vue'
 import { useRoute } from 'vue-router'
 import AppHeader from '../components/AppHeader.vue'
+import useFirebase from '../composables/useFirebase'
 import useGraphQL from '../composables/useGraphQL'
 import Flight from '../interfaces/Flight'
 
@@ -13,6 +14,7 @@ export default defineComponent({
   setup() {
     const route = useRoute()
     const { query } = useGraphQL()
+    const { user } = useFirebase()
 
     const flightId = ref<string | undefined>(
       route.params.id ? (route.params.id as string) : undefined,
@@ -35,6 +37,10 @@ export default defineComponent({
                 id
                 rowCount
                 columncount
+              }
+              bookedSeats {
+                row
+                column
               }
             }
           }`,
@@ -59,7 +65,7 @@ export default defineComponent({
     }
 
     const onSeatSelected = (r: any, c: any) => {
-      const takenSeats = generatedSeats.value.filter(
+      const selectedSeats = generatedSeats.value.filter(
         e => e.status == 'SELECTED',
       )
 
@@ -77,12 +83,14 @@ export default defineComponent({
             generatedSeats.value[i].position.c == selectedSeat.value.position.c
           ) {
             if (generatedSeats.value[i].status == 'FREE') {
-              if (takenSeats.length < parseInt(passengerCount.value!)) {
+              if (selectedSeats.length < parseInt(passengerCount.value!)) {
                 generatedSeats.value[i].status = 'SELECTED'
                 selectedSeat.value = null
               }
             } else if (generatedSeats.value[i].status == 'SELECTED') {
               generatedSeats.value[i].status = 'FREE'
+              selectedSeat.value = null
+            } else {
               selectedSeat.value = null
             }
             break
@@ -99,7 +107,7 @@ export default defineComponent({
             case 'FREE':
               return 'bg-blue-light'
             case 'TAKEN':
-              return 'bg-black'
+              return 'bg-neutral-xlight pointer-events-none border-0'
             case 'SELECTED':
               return 'bg-blue'
           }
@@ -109,9 +117,41 @@ export default defineComponent({
       }
     }
 
-    onMounted(() => {
-      console.log(seats.value?.plane.rowCount)
+    const addBookedSeats = async () => {
+      const selectedSeats = generatedSeats.value.filter(
+        e => e.status == 'SELECTED',
+      )
+      if (selectedSeats.length == parseInt(passengerCount.value!)) {
+        for (let seat of selectedSeats) {
+          const response = await query(
+            `addBookedSeat`,
+            `mutation addBookedSeat($data: UserInput = {row: "", column: ""}, $userId: "", $flightId: "") {
+              addBookedSeat(data: $data, userId: $userId, flightId: $flightId) {
+                id
+                column
+                row
+                passager {
+                  id
+                }
+                flight {
+                  id
+                }
+              }
+            }`,
+            {
+              data: {
+                row: seat.position.r,
+                column: seat.position.c,
+              },
+              userId: user.value?.uid,
+              flightId: flightId.value,
+            },
+          )
+        }
+      }
+    }
 
+    onMounted(() => {
       const generateSeats = () => {
         if (seats.value != null) {
           for (let y = 1; y <= seats.value?.plane.rowCount; ++y) {
@@ -120,6 +160,12 @@ export default defineComponent({
                 position: { r: y, c: x },
                 status: 'FREE',
               })
+            }
+          }
+          for (let bookedSeat of seats.value.bookedSeats) {
+            let seat = getSeat(bookedSeat.row, bookedSeat.column)
+            if (seat != null) {
+              seat.status = 'TAKEN'
             }
           }
         }
@@ -137,6 +183,7 @@ export default defineComponent({
       getSeat,
       onSeatSelected,
       classifier,
+      addBookedSeats,
     }
   },
 })
@@ -214,6 +261,51 @@ export default defineComponent({
             </td>
           </tr>
         </table>
+        <button
+          @click="addBookedSeats()"
+          class="
+            bg-blue
+            text-white
+            px-4
+            py-3.5
+            rounded-xl
+            font-bold
+            focus:outline-none
+            focus-visible:ring
+            flex
+            relative
+            w-32
+            mx-auto
+            mt-12
+            items-center
+            hover:bg-blue-dark
+            transition-all
+          "
+        >
+          FINISH
+          <svg
+            class="
+              absolute
+              right-0
+              p-1
+              bg-blue-dark
+              hover:bg-blue
+              rounded
+              mr-4
+              w-6
+              fill-current
+              text-white
+              transition-all
+            "
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+          >
+            <path d="M0 0h24v24H0V0z" fill="none" />
+            <path
+              d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8-8-8z"
+            />
+          </svg>
+        </button>
       </div>
     </div>
   </div>

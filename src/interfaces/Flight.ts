@@ -9,6 +9,11 @@ export default interface Flight {
     rowCount: number
     columncount: number
   }
-  bookedSeats: string[]
+  bookedSeats: [
+    {
+      row: number
+      column: number
+    },
+  ]
   reviews: string[]
 }
