@@ -62,6 +62,34 @@ const routes: RouteRecordRaw[] = [
       }
     },
   },
+  {
+    path: '/account/bookings',
+    component: () => import('../screens/Account/Bookings.vue'),
+    meta: {
+      logInRequired: true,
+    },
+  },
+  {
+    path: '/account/bookings/:id',
+    component: () => import('../screens/Account/BookingDetail.vue'),
+    meta: {
+      logInRequired: true,
+    },
+  },
+  {
+    path: '/account/settings',
+    component: () => import('../screens/Account/Settings.vue'),
+    meta: {
+      logInRequired: true,
+    },
+  },
+  {
+    path: '/account/reviews',
+    component: () => import('../screens/Account/Reviews.vue'),
+    meta: {
+      logInRequired: true,
+    },
+  },
 ]
 
 const router: Router = createRouter({

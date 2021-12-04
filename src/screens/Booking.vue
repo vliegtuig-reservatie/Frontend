@@ -99,7 +99,7 @@ export default defineComponent({
               <p class="text-neutral-xlight pointer-events-none">Booking</p>
             </div>
             <h1 class="text-2xl mb-4 font-bold">Confirm your booking</h1>
-            <div class="flex gap-20 border-t-2 border-blue-light">
+            <div class="flex gap-20 border-t-2 border-blue-light mr-8">
               <div class="w-full max-w-xs">
                 <h2 class="text-lg font-bold py-4">Your flight</h2>
                 <div

@@ -181,13 +181,19 @@ export default defineComponent({
                 z-20
               "
             >
-              <RouterLink to="/" class="block px-3 py-2 hover:bg-blue-xlight"
+              <RouterLink
+                to="/account/settings"
+                class="block px-3 py-2 hover:bg-blue-xlight"
                 >Account settings</RouterLink
               >
-              <RouterLink to="/" class="block px-3 py-2 hover:bg-blue-xlight"
+              <RouterLink
+                to="/account/bookings"
+                class="block px-3 py-2 hover:bg-blue-xlight"
                 >My bookings</RouterLink
               >
-              <RouterLink to="/" class="block px-3 py-2 hover:bg-blue-xlight"
+              <RouterLink
+                to="/account/reviews"
+                class="block px-3 py-2 hover:bg-blue-xlight"
                 >My reviews</RouterLink
               >
               <button

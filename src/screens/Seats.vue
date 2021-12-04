@@ -1,6 +1,6 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref, Ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import AppHeader from '../components/AppHeader.vue'
 import useFirebase from '../composables/useFirebase'
 import useGraphQL from '../composables/useGraphQL'
@@ -13,6 +13,7 @@ export default defineComponent({
 
   setup() {
     const route = useRoute()
+    const { push } = useRouter()
     const { query } = useGraphQL()
     const { user } = useFirebase()
 
@@ -125,7 +126,7 @@ export default defineComponent({
         for (let seat of selectedSeats) {
           const response = await query(
             `addBookedSeat`,
-            `mutation addBookedSeat($data: UserInput = {row: "", column: ""}, $userId: "", $flightId: "") {
+            `mutation addBookedSeat($data: SeatQueryInput!, $userId: String!, $flightId: String!) {
               addBookedSeat(data: $data, userId: $userId, flightId: $flightId) {
                 id
                 column
@@ -147,6 +148,7 @@ export default defineComponent({
               flightId: flightId.value,
             },
           )
+          push('/account/bookings')
         }
       }
     }
@@ -172,7 +174,6 @@ export default defineComponent({
       }
 
       generateSeats()
-      getSeat(1, 2)
     })
 
     return {

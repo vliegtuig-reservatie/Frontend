@@ -16,4 +16,6 @@ export default interface Flight {
     },
   ]
   reviews: string[]
+  rowCount: number
+  columnCount: number
 }
