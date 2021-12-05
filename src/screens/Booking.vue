@@ -80,7 +80,7 @@ export default defineComponent({
           z-10
         "
       >
-        <div class="flex justify-between">
+        <div class="flex flex-col md:justify-between md:flex-row">
           <div class="w-full max-w-2xl">
             <div class="flex items-center text-sm -mt-4">
               <RouterLink to="/">Dashboard</RouterLink>
@@ -99,8 +99,17 @@ export default defineComponent({
               <p class="text-neutral-xlight pointer-events-none">Booking</p>
             </div>
             <h1 class="text-2xl mb-4 font-bold">Confirm your booking</h1>
-            <div class="flex gap-20 border-t-2 border-blue-light mr-8">
-              <div class="w-full max-w-xs">
+            <div
+              class="
+                flex flex-col
+                gap-0
+                sm:gap-6 sm:flex-row
+                lg:gap-20
+                border-t-2 border-blue-light
+                mr-8
+              "
+            >
+              <div class="w-full max-w-xs mx-auto sm:mx-0">
                 <h2 class="text-lg font-bold py-4">Your flight</h2>
                 <div
                   class="
@@ -113,6 +122,8 @@ export default defineComponent({
                     text-neutral
                     placeholder-neutral-xlight
                     w-full
+                    min-w-max
+                    max-w-xs
                   "
                 >
                   <p class="text-sm font-bold text-neutral-light">Departing</p>
@@ -147,6 +158,8 @@ export default defineComponent({
                     text-neutral
                     placeholder-neutral-xlight
                     w-full
+                    min-w-max
+                    max-w-xs
                   "
                 >
                   <p class="text-sm font-bold text-neutral-light">Arrival</p>
@@ -171,9 +184,11 @@ export default defineComponent({
                   </p>
                 </div>
               </div>
-              <div>
+              <div
+                class="mx-auto max-w-xs w-full sm:mx-0 sm:max-w-none sm:w-auto"
+              >
                 <h2 class="text-lg font-bold py-4">Passengers</h2>
-                <div class="flex">
+                <div class="flex mb-12">
                   <input
                     type="number"
                     id="passengers"
@@ -255,9 +270,6 @@ export default defineComponent({
                       focus-visible:ring
                       flex
                       relative
-                      mx-auto
-                      col-span-2
-                      sm:col-span-1 sm:my-0
                       items-center
                       justify-center
                       hover:bg-blue-dark
@@ -302,6 +314,8 @@ export default defineComponent({
               py-3
               flex flex-col
               justify-between
+              mx-auto
+              sm:mx-0
             "
           >
             <div class="leading-8">

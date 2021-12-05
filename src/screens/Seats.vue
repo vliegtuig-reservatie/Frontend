@@ -241,23 +241,23 @@ export default defineComponent({
         <h1 class="text-2xl mb-4 font-bold">
           Choose seats for {{ passengerCount }} passenger(s)
         </h1>
-        <table class="mx-auto">
+        <table class="mx-auto w-full max-w-lg whitespace-nowrap">
           <tr v-for="(row, i) in seats.plane.rowCount" :key="i">
             <td
               v-for="(column, i) in seats.plane.columncount"
               :key="i"
-              class="px-2"
+              class="px-0 lg:px-1"
             >
               <button
                 @click="onSeatSelected(row, column)"
                 :class="classifier(row, column)"
                 class="
-                  w-16
-                  h-16
+                  w-3/4
                   border-2 border-blue-light
                   rounded-t-3xl rounded-b-lg
                   hover:border-2 hover:border-blue
                 "
+                style="padding-bottom: 75%"
               ></button>
             </td>
           </tr>
