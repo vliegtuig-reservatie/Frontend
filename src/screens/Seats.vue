@@ -148,9 +148,9 @@ export default defineComponent({
               flightId: flightId.value,
             },
           )
-          push('/account/bookings')
         }
       }
+      push('/account/bookings/' + flightId.value)
     }
 
     onMounted(() => {

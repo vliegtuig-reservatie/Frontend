@@ -17,7 +17,7 @@ export default defineComponent({
 
 <template>
   <div class="mb-6">
-    <div class="grid grid-cols-small sm:grid-cols gap-3 sm:gap-6">
+    <div class="grid grid-cols-small sm:grid-cols gap-3 sm:gap-6 items-center">
       <img
         :src="'/img/' + props.data.plane.agency + '.png'"
         class="flex self-center w-16"
@@ -87,6 +87,7 @@ export default defineComponent({
           focus-visible:ring
           flex
           relative
+          h-14
           w-32
           mx-auto
           col-span-2

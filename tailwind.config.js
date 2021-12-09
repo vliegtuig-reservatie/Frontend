@@ -31,7 +31,10 @@ module.exports = {
     gridTemplateColumns: {
       DEFAULT: '1fr 3fr 3fr 3fr 1fr',
       small: 'repeat(2,minmax(0,1fr))'
-    }
+    },
+    stroke: theme => ({
+      'blue': theme('colors.blue.light')
+    })
   },
 
   variants: {
