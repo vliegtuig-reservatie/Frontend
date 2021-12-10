@@ -44,7 +44,7 @@ export default defineComponent({
       )
 
       var filteredData = <any>[]
-      await data.forEach(a => {
+      await data.forEach((a: any) => {
         if (new Date(a.departureTime) > new Date()) {
           filteredData.push(a)
         }
@@ -67,8 +67,14 @@ export default defineComponent({
             flight.arrivalLocation.IATACode.toLowerCase().includes(
               arrivalInput.value.toLowerCase(),
             )) &&
-          flight.departureTime.includes(departureDateInput.value) &&
-          flight.arrivalTime.includes(arrivalDateInput.value),
+          ((flight.departureTime.includes(departureDateInput.value) &&
+            flight.arrivalTime.includes(arrivalDateInput.value)) ||
+            (new Date(flight.departureTime) >=
+              new Date(departureDateInput.value) &&
+              new Date(flight.departureTime) <=
+                new Date(
+                  new Date(arrivalDateInput.value).setUTCHours(23, 59, 59, 999),
+                ))),
       )
     })
 

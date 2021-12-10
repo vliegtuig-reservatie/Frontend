@@ -67,10 +67,11 @@ export default defineComponent({
       </div>
       <p class="flex items-center font-bold">
         {{
-          new Date(props.data.arrivalTime).toLocaleString('en-US', {
+          new Date(props.data.departureTime).toLocaleString('en-US', {
             day: 'numeric',
             weekday: 'long',
             month: 'long',
+            year: 'numeric',
           })
         }}
       </p>
