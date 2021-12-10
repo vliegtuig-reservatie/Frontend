@@ -1,8 +1,14 @@
 export default interface Flight {
   departureTime: string
   arrivalTime: string
-  departureLocation: string
-  arrivalLocation: string
+  departureLocation: {
+    name: string
+    IATACode: String
+  }
+  arrivalLocation: {
+    name: string
+    IATACode: String
+  }
   stops: string[]
   plane: {
     id: string

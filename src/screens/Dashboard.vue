@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent, ref, Ref } from 'vue'
+import { computed, defineComponent, ref, Ref } from 'vue'
 import AppHeader from '../components/AppHeader.vue'
 import FlightGrid from '../components/FlightGrid.vue'
 import useGraphQL from '../composables/useGraphQL'
@@ -15,6 +15,10 @@ export default defineComponent({
     const { query } = useGraphQL()
 
     const flights: Ref<FlightModel[]> = ref([])
+    const departureInput = ref<string>('')
+    const arrivalInput = ref<string>('')
+    const departureDateInput = ref<string>('')
+    const arrivalDateInput = ref<string>('')
 
     const getFlights = async () => {
       const data = await query(
@@ -39,13 +43,44 @@ export default defineComponent({
         }`,
       )
 
-      flights.value = data
+      var filteredData = <any>[]
+      await data.forEach(a => {
+        if (new Date(a.departureTime) > new Date()) {
+          filteredData.push(a)
+        }
+      })
+      flights.value = filteredData
     }
+
+    const filteredFlights = computed(() => {
+      return flights.value.filter(
+        flight =>
+          (flight.departureLocation.name
+            .toLowerCase()
+            .includes(departureInput.value.toLowerCase()) ||
+            flight.departureLocation.IATACode.toLowerCase().includes(
+              departureInput.value.toLowerCase(),
+            )) &&
+          (flight.arrivalLocation.name
+            .toLowerCase()
+            .includes(arrivalInput.value.toLowerCase()) ||
+            flight.arrivalLocation.IATACode.toLowerCase().includes(
+              arrivalInput.value.toLowerCase(),
+            )) &&
+          flight.departureTime.includes(departureDateInput.value) &&
+          flight.arrivalTime.includes(arrivalDateInput.value),
+      )
+    })
 
     getFlights()
 
     return {
       flights,
+      departureInput,
+      departureDateInput,
+      arrivalInput,
+      arrivalDateInput,
+      filteredFlights,
     }
   },
 })
@@ -72,6 +107,7 @@ export default defineComponent({
         <div class="flex flex-col lg:justify-between lg:flex-row gap-6">
           <div class="flex justify-between w-full">
             <input
+              v-model="departureInput"
               type="text"
               id="departure"
               class="
@@ -122,6 +158,7 @@ export default defineComponent({
             </div>
 
             <input
+              v-model="arrivalInput"
               type="text"
               id="arrival"
               class="
@@ -142,6 +179,7 @@ export default defineComponent({
           </div>
           <div class="flex justify-between w-full">
             <input
+              v-model="departureDateInput"
               type="date"
               id="departureDate"
               :min="new Date(Date.now()).toISOString().split('T')[0]"
@@ -162,6 +200,7 @@ export default defineComponent({
               placeholder="Departure Date"
             />
             <input
+              v-model="arrivalDateInput"
               type="date"
               id="arrivalDate"
               :min="new Date(Date.now()).toISOString().split('T')[0]"
@@ -188,7 +227,11 @@ export default defineComponent({
         class="mx-auto max-w-7xl p-6 sm:p-8"
       >
         <h1 class="text-2xl mb-8 font-bold">Flights</h1>
-        <FlightGrid v-for="flight of flights" :key="flight.id" :data="flight" />
+        <FlightGrid
+          v-for="flight of filteredFlights"
+          :key="flight.id"
+          :data="flight"
+        />
       </div>
       <div v-else class="mx-auto max-w-7xl p-6 sm:p-8">
         <h1 class="text-2xl mb-8 font-bold">Flights</h1>
