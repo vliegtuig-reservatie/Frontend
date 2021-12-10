@@ -52,7 +52,7 @@ export default defineComponent({
 
       var groupedData = <any>{}
       var seats = <any>[]
-      data.bookedSeats.forEach(function (a: any) {
+      await data.bookedSeats.forEach(function (a: any) {
         groupedData[a.flight.id] = groupedData[a.flight.id] || []
         seats.push({ row: a.row, column: a.column })
         groupedData = {
@@ -64,7 +64,6 @@ export default defineComponent({
       })
 
       flight.value = groupedData
-      console.log(groupedData)
     }
 
     const getReview = async () => {
@@ -84,7 +83,6 @@ export default defineComponent({
       if (review.value !== undefined && review !== null) {
         reviewInput.value = review.value?.note
         rating.value = review.value?.stars
-        console.log(review.value?.stars)
       }
     }
 
@@ -112,27 +110,24 @@ export default defineComponent({
       }
     }
 
-    onMounted(() => {
-      const generateSeats = () => {
-        if (flight.value != null) {
-          for (let y = 1; y <= flight.value?.rowCount; ++y) {
-            for (let x = 1; x <= flight.value?.columnCount; ++x) {
-              generatedSeats.value.push({
-                position: { r: y, c: x },
-                status: 'FREE',
-              })
-            }
+    const generateSeats = () => {
+      if (flight.value !== undefined) {
+        for (let y = 1; y <= flight.value?.rowCount; ++y) {
+          for (let x = 1; x <= flight.value?.columnCount; ++x) {
+            generatedSeats.value.push({
+              position: { r: y, c: x },
+              status: 'FREE',
+            })
           }
-          for (let bookedSeat of flight.value.bookedSeats) {
-            let seat = getSeat(bookedSeat.row, bookedSeat.column)
-            if (seat != null) {
-              seat.status = 'BOOKED'
-            }
+        }
+        for (let bookedSeat of flight.value.bookedSeats) {
+          let seat = getSeat(bookedSeat.row, bookedSeat.column)
+          if (seat != null) {
+            seat.status = 'BOOKED'
           }
         }
       }
-      generateSeats()
-    })
+    }
 
     const createReview = async () => {
       const response = await query(
@@ -173,8 +168,13 @@ export default defineComponent({
       getReview()
     }
 
-    getFlight()
-    getReview()
+    const data = async () => {
+      await getFlight()
+      getReview()
+      generateSeats()
+    }
+
+    data()
 
     return {
       flightId,
@@ -384,7 +384,7 @@ export default defineComponent({
               </svg>
             </button>
           </div>
-          <div>
+          <div v-if="flight">
             <h2 class="text-lg font-bold py-4 text-center">Your seats</h2>
             <table class="mx-auto">
               <tr v-for="(row, i) in flight.rowCount" :key="i">
@@ -398,6 +398,24 @@ export default defineComponent({
                     class="
                       w-8
                       h-8
+                      rounded-t-3xl rounded-b-lg
+                      pointer-events-none
+                    "
+                  ></button>
+                </td>
+              </tr>
+            </table>
+          </div>
+          <div v-else>
+            <h2 class="text-lg font-bold py-4 text-center">Your seats</h2>
+            <table class="mx-auto animate-pulse">
+              <tr v-for="(row, i) in 7" :key="i">
+                <td v-for="(column, i) in 5" :key="i" class="px-1">
+                  <button
+                    class="
+                      w-8
+                      h-8
+                      bg-blue-light
                       rounded-t-3xl rounded-b-lg
                       pointer-events-none
                     "

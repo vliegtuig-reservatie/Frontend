@@ -327,9 +327,9 @@ export default defineComponent({
                 </p>
               </div>
               <div class="flex justify-between">
-                <p>31% tax</p>
+                <p>21% tax</p>
                 <p class="font-bold">
-                  €{{ (priceTax = pricePassengers * 0.31) }}
+                  €{{ (priceTax = pricePassengers * 0.21) }}
                 </p>
               </div>
               <div class="flex justify-between">

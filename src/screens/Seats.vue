@@ -51,8 +51,6 @@ export default defineComponent({
       seats.value = data
     }
 
-    getSeatCount()
-
     const getSeat = (r: any, c: any) => {
       for (let i = 0; i < generatedSeats.value.length; ++i) {
         if (
@@ -153,28 +151,31 @@ export default defineComponent({
       push('/account/bookings/' + flightId.value)
     }
 
-    onMounted(() => {
-      const generateSeats = () => {
-        if (seats.value != null) {
-          for (let y = 1; y <= seats.value?.plane.rowCount; ++y) {
-            for (let x = 1; x <= seats.value?.plane.columncount; ++x) {
-              generatedSeats.value.push({
-                position: { r: y, c: x },
-                status: 'FREE',
-              })
-            }
+    const generateSeats = () => {
+      if (seats.value != null) {
+        for (let y = 1; y <= seats.value?.plane.rowCount; ++y) {
+          for (let x = 1; x <= seats.value?.plane.columncount; ++x) {
+            generatedSeats.value.push({
+              position: { r: y, c: x },
+              status: 'FREE',
+            })
           }
-          for (let bookedSeat of seats.value.bookedSeats) {
-            let seat = getSeat(bookedSeat.row, bookedSeat.column)
-            if (seat != null) {
-              seat.status = 'TAKEN'
-            }
+        }
+        for (let bookedSeat of seats.value.bookedSeats) {
+          let seat = getSeat(bookedSeat.row, bookedSeat.column)
+          if (seat != null) {
+            seat.status = 'TAKEN'
           }
         }
       }
+    }
 
+    const data = async () => {
+      await getSeatCount()
       generateSeats()
-    })
+    }
+
+    data()
 
     return {
       flightId,
@@ -241,7 +242,7 @@ export default defineComponent({
         <h1 class="text-2xl mb-4 font-bold">
           Choose seats for {{ passengerCount }} passenger(s)
         </h1>
-        <table class="mx-auto w-full max-w-lg whitespace-nowrap">
+        <table v-if="seats" class="mx-auto w-full max-w-lg whitespace-nowrap">
           <tr v-for="(row, i) in seats.plane.rowCount" :key="i">
             <td
               v-for="(column, i) in seats.plane.columncount"
@@ -256,6 +257,25 @@ export default defineComponent({
                   border-2 border-blue-light
                   rounded-t-3xl rounded-b-lg
                   hover:border-2 hover:border-blue
+                "
+                style="padding-bottom: 75%"
+              ></button>
+            </td>
+          </tr>
+        </table>
+        <table
+          v-else
+          class="mx-auto w-full max-w-lg whitespace-nowrap animate-pulse"
+        >
+          <tr v-for="(row, i) in 4" :key="i">
+            <td v-for="(column, i) in 6" :key="i" class="px-0 lg:px-1">
+              <button
+                class="
+                  w-3/4
+                  bg-blue-light
+                  border-2 border-blue-light
+                  rounded-t-3xl rounded-b-lg
+                  pointer-events-none
                 "
                 style="padding-bottom: 75%"
               ></button>
