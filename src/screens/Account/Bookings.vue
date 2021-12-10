@@ -48,29 +48,27 @@ export default defineComponent({
         { id: user.value?.uid },
       )
       var groupedData = <any>{}
-      data.bookedSeats.forEach(function (a: any) {
-        groupedData[a.flight.id] = groupedData[a.flight.id] || []
-        groupedData[a.flight.id] = {
-          id: a.flight.id,
-          arrivalTime: a.flight.arrivalTime,
-          departureTime: a.flight.departureTime,
-          arrivalLocation: {
-            name: a.flight.arrivalLocation.name,
-            IATACode: a.flight.arrivalLocation.IATACode,
-          },
-          departureLocation: {
-            name: a.flight.arrivalLocation.name,
-            IATACode: a.flight.arrivalLocation.IATACode,
-          },
-          plane: {
-            agency: a.flight.plane.agency,
-          },
-        }
-      })
-
-      bookingData.value = groupedData
-      for (let bookings of Object.values(groupedData)) {
-        console.log(bookings)
+      if (groupedData !== undefined) {
+        data.bookedSeats.forEach(function (a: any) {
+          groupedData[a.flight.id] = groupedData[a.flight.id] || []
+          groupedData[a.flight.id] = {
+            id: a.flight.id,
+            arrivalTime: a.flight.arrivalTime,
+            departureTime: a.flight.departureTime,
+            arrivalLocation: {
+              name: a.flight.arrivalLocation.name,
+              IATACode: a.flight.arrivalLocation.IATACode,
+            },
+            departureLocation: {
+              name: a.flight.arrivalLocation.name,
+              IATACode: a.flight.arrivalLocation.IATACode,
+            },
+            plane: {
+              agency: a.flight.plane.agency,
+            },
+          }
+        })
+        bookingData.value = groupedData
       }
     }
 
@@ -120,11 +118,16 @@ export default defineComponent({
         <h1 class="text-2xl mb-12 font-bold border-b-2 pb-4 border-blue-light">
           My bookings
         </h1>
-        <BookingGrid
-          v-for="booking of Object.values(bookingData)"
-          :key="booking.id"
-          :data="booking"
-        />
+        <div v-if="bookingData && Object.keys(bookingData).length !== 0">
+          <BookingGrid
+            v-for="booking of Object.values(bookingData)"
+            :key="booking.id"
+            :data="booking"
+          />
+        </div>
+        <div class="w-full" v-else>
+          <div class="text-center">You have made no bookings yet.</div>
+        </div>
       </div>
     </div>
   </div>

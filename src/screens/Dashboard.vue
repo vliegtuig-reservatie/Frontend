@@ -183,9 +183,27 @@ export default defineComponent({
           </div>
         </div>
       </div>
-      <div class="mx-auto max-w-7xl p-6 sm:p-8">
+      <div
+        v-if="flights && Object.keys(flights).length !== 0"
+        class="mx-auto max-w-7xl p-6 sm:p-8"
+      >
         <h1 class="text-2xl mb-8 font-bold">Flights</h1>
         <FlightGrid v-for="flight of flights" :key="flight.id" :data="flight" />
+      </div>
+      <div v-else class="mx-auto max-w-7xl p-6 sm:p-8">
+        <h1 class="text-2xl mb-8 font-bold">Flights</h1>
+        <div
+          class="h-12 rounded-2xl bg-blue-light mb-6 animate-pulse-slow"
+        ></div>
+        <div
+          class="h-12 w-10/12 rounded-2xl bg-blue-light mb-6 animate-pulse-fast"
+        ></div>
+        <div
+          class="w-11/12 h-12 rounded-2xl bg-blue-light mb-6 animate-pulse-slow"
+        ></div>
+        <div
+          class="w-9/12 h-12 rounded-2xl bg-blue-light mb-6 animate-pulse-fast"
+        ></div>
       </div>
     </div>
   </div>

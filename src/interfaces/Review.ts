@@ -3,6 +3,15 @@ export default interface Review {
   stars: number
   note: string
   flight?: {
-    id: string
+    arrivalLocation: {
+      IATACode: string
+    }
+    departureLocation: {
+      IATACode: string
+    }
+    arrivalTime: string
+    plane: {
+      agency: string
+    }
   }
 }

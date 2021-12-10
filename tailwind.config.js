@@ -34,7 +34,11 @@ module.exports = {
     },
     stroke: theme => ({
       'blue': theme('colors.blue.light')
-    })
+    }),
+    animation: {
+      'pulse-slow': 'pulse 2s linear infinite',
+      'pulse-fast': 'pulse 1.5s linear infinite',
+    }
   },
 
   variants: {

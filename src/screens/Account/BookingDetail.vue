@@ -168,6 +168,26 @@ export default defineComponent({
       getReview()
     }
 
+    const deleteReview = async () => {
+      if (confirm('Are you sure you want to delete your review?')) {
+        const response = await query(
+          `deleteReview`,
+          `mutation deleteReview($id: String!) {
+            deleteReview(id: $id) {
+              id
+            }
+          }`,
+          {
+            id: review.value?.id,
+          },
+        )
+        getReview()
+        rating.value = 0
+        hoverStars.value = false
+        reviewInput.value = ''
+      }
+    }
+
     const data = async () => {
       await getFlight()
       getReview()
@@ -188,6 +208,7 @@ export default defineComponent({
       classifier,
       createReview,
       updateReview,
+      deleteReview,
     }
   },
 })
@@ -231,9 +252,18 @@ export default defineComponent({
         <h1 class="text-2xl mb-4 font-bold">Booking details</h1>
         <div class="w-full gap-20 flex flex-col md:flex-row md:justify-between">
           <div class="w-full border-t-2 border-blue-light md:max-w-lg">
-            <h2 class="text-lg font-bold py-4">
-              {{ review !== null ? 'Update your review' : 'Write a review' }}
-            </h2>
+            <div class="flex justify-between">
+              <h2 class="text-lg font-bold py-4">
+                {{ review !== null ? 'Update your review' : 'Write a review' }}
+              </h2>
+              <button
+                v-if="review && review !== null"
+                @click="deleteReview()"
+                class="float-right text-blue"
+              >
+                Delete review
+              </button>
+            </div>
             <textarea
               v-model="reviewInput"
               type="text"
