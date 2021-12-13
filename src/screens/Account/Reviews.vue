@@ -35,7 +35,7 @@ export default defineComponent({
                 departureLocation {
                   IATACode
                 }
-                arrivalTime
+                departureTime
                 plane {
                   agency
                 }

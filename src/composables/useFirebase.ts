@@ -99,7 +99,6 @@ export default () => {
       signInWithEmailAndPassword(auth, email, password)
         .then(async userCredential => {
           user.value = userCredential.user
-          console.log(userCredential.user)
           resolve(true)
         })
         .catch(error => {
