@@ -90,6 +90,48 @@ const routes: RouteRecordRaw[] = [
       logInRequired: true,
     },
   },
+  {
+    path: '/admin/',
+    component: () => import('../screens/Admin/Dashboard.vue'),
+    meta: {
+      logInRequired: true,
+      admin: true,
+    },
+    beforeEnter: (to, from, next) => {
+      if (to.meta.admin && to.meta.admin === true) {
+        user.value?.getIdTokenResult().then(idTokenResult => {
+          if (!!idTokenResult.claims.admin) {
+            next()
+          } else {
+            next('/')
+          }
+        })
+      } else {
+        next()
+      }
+    },
+  },
+  {
+    path: '/admin/:id',
+    component: () => import('../screens/Admin/Reviews.vue'),
+    meta: {
+      logInRequired: true,
+      admin: true,
+    },
+    beforeEnter: (to, from, next) => {
+      if (to.meta.admin && to.meta.admin === true) {
+        user.value?.getIdTokenResult().then(idTokenResult => {
+          if (!!idTokenResult.claims.admin) {
+            next()
+          } else {
+            next('/')
+          }
+        })
+      } else {
+        next()
+      }
+    },
+  },
 ]
 
 const router: Router = createRouter({

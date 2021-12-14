@@ -34,8 +34,10 @@ export default defineComponent({
       ) {
         if (userInput.password === userInput.confirmPassword) {
           createUser(
-            userInput.firstName,
-            userInput.lastName,
+            userInput.firstName.charAt(0).toUpperCase() +
+              userInput.firstName.slice(1),
+            userInput.lastName.charAt(0).toUpperCase() +
+              userInput.lastName.slice(1),
             userInput.email as string,
             userInput.password as string,
           ).then((success: boolean) => {

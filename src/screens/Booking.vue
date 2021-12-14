@@ -329,7 +329,7 @@ export default defineComponent({
               <div class="flex justify-between">
                 <p>21% tax</p>
                 <p class="font-bold">
-                  €{{ (priceTax = pricePassengers * 0.21) }}
+                  €{{ Math.floor((priceTax = pricePassengers * 0.21)) }}
                 </p>
               </div>
               <div class="flex justify-between">
@@ -342,7 +342,7 @@ export default defineComponent({
             >
               <p>Total</p>
               <p class="font-bold">
-                €{{ (totalPrice = pricePassengers + priceTax + 2) }}
+                €{{ Math.floor((totalPrice = pricePassengers + priceTax + 2)) }}
               </p>
             </div>
           </div>

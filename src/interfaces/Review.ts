@@ -1,5 +1,5 @@
 export default interface Review {
-  id: string
+  id?: string
   stars: number
   note: string
   flight?: {
@@ -14,4 +14,8 @@ export default interface Review {
       agency: string
     }
   }
+  user?: {
+    firstName: string
+  }
+  avgStars?: number
 }

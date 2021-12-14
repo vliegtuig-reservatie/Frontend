@@ -86,6 +86,7 @@ export default () => {
               },
             },
           )
+          await user.value.getIdToken(true)
           resolve(true)
         })
         .catch(error => {
