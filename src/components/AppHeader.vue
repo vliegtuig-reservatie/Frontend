@@ -9,12 +9,23 @@ export default defineComponent({
   props: {
     login: { type: Boolean },
   },
-  setup() {
+  setup(props) {
     const { query } = useGraphQL()
     const { user, logout } = useFirebase()
     const { push } = useRouter()
 
     const userData: Ref<UserModel[]> = ref([])
+    const isAdmin = ref<boolean>(false)
+
+    const showAdmin = () => {
+      user.value?.getIdTokenResult().then(idTokenResult => {
+        if (!!idTokenResult.claims.admin) {
+          isAdmin.value = true
+        } else {
+          isAdmin.value = false
+        }
+      })
+    }
 
     const getUserData = async () => {
       const data = await query(
@@ -33,7 +44,10 @@ export default defineComponent({
       userData.value = data
     }
 
-    getUserData()
+    if (props.login == false) {
+      getUserData()
+      showAdmin()
+    }
 
     const logOut = () => {
       logout()
@@ -48,6 +62,7 @@ export default defineComponent({
       user,
       userData,
       logOut,
+      isAdmin,
     }
   },
 
@@ -181,14 +196,26 @@ export default defineComponent({
                 z-20
               "
             >
-              <RouterLink to="/" class="block px-3 py-2 hover:bg-blue-xlight"
+              <RouterLink
+                to="/account/settings"
+                class="block px-3 py-2 hover:bg-blue-xlight"
                 >Account settings</RouterLink
               >
-              <RouterLink to="/" class="block px-3 py-2 hover:bg-blue-xlight"
+              <RouterLink
+                to="/account/bookings"
+                class="block px-3 py-2 hover:bg-blue-xlight"
                 >My bookings</RouterLink
               >
-              <RouterLink to="/" class="block px-3 py-2 hover:bg-blue-xlight"
+              <RouterLink
+                to="/account/reviews"
+                class="block px-3 py-2 hover:bg-blue-xlight"
                 >My reviews</RouterLink
+              >
+              <RouterLink
+                v-if="isAdmin"
+                to="/admin/"
+                class="block px-3 py-2 hover:bg-blue-xlight"
+                >Admin</RouterLink
               >
               <button
                 @click="logOut"

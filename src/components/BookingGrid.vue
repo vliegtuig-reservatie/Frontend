@@ -71,56 +71,57 @@ export default defineComponent({
             day: 'numeric',
             weekday: 'long',
             month: 'long',
-            year: 'numeric',
           })
         }}
       </p>
-      <div class="text-center mx-auto col-span-2 sm:col-span-1 sm:my-0 my-8">
-        <RouterLink
-          :to="'/booking/' + props.data.id"
+      <RouterLink
+        :to="'/account/bookings/' + props.data.id"
+        class="
+          bg-blue
+          text-white
+          px-4
+          py-3.5
+          rounded-xl
+          font-bold
+          focus:outline-none
+          focus-visible:ring
+          flex
+          relative
+          h-14
+          w-32
+          mx-auto
+          col-span-2
+          my-8
+          sm:col-span-1 sm:my-0
+          items-center
+          hover:bg-blue-dark
+          transition-all
+        "
+      >
+        DETAILS
+        <svg
           class="
-            bg-blue
+            absolute
+            right-0
+            p-1
+            bg-blue-dark
+            hover:bg-blue
+            rounded
+            mr-4
+            w-6
+            fill-current
             text-white
-            px-4
-            py-3.5
-            rounded-xl
-            font-bold
-            focus:outline-none
-            focus-visible:ring
-            flex
-            relative
-            h-14
-            w-28
-            items-center
-            hover:bg-blue-dark
             transition-all
           "
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
         >
-          BOOK
-          <svg
-            class="
-              absolute
-              right-0
-              p-1
-              bg-blue-dark
-              hover:bg-blue
-              rounded
-              mr-4
-              w-6
-              fill-current
-              text-white
-              transition-all
-            "
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-          >
-            <path d="M0 0h24v24H0V0z" fill="none" />
-            <path
-              d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8-8-8z"
-            />
-          </svg>
-        </RouterLink>
-      </div>
+          <path d="M0 0h24v24H0V0z" fill="none" />
+          <path
+            d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8-8-8z"
+          />
+        </svg>
+      </RouterLink>
     </div>
   </div>
 </template>

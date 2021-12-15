@@ -1,15 +1,15 @@
 <script lang="ts">
 import { computed, defineComponent, ref, Ref } from 'vue'
-import AppHeader from '../components/AppHeader.vue'
-import FlightGrid from '../components/FlightGrid.vue'
-import useFirebase from '../composables/useFirebase'
-import useGraphQL from '../composables/useGraphQL'
-import FlightModel from '../interfaces/Flight'
+import AppHeader from '../../components/AppHeader.vue'
+import AdminFlightGrid from '../../components/AdminFlightGrid.vue'
+import useFirebase from '../../composables/useFirebase'
+import useGraphQL from '../../composables/useGraphQL'
+import FlightModel from '../../interfaces/Flight'
 
 export default defineComponent({
   components: {
     AppHeader,
-    FlightGrid,
+    AdminFlightGrid,
   },
 
   setup() {
@@ -41,21 +41,23 @@ export default defineComponent({
             plane {
               agency
             }
+            reviews {
+              stars
+            }
           }
         }`,
       )
 
       var filteredData = <any>[]
-      await data.forEach((a: any) => {
-        if (new Date(a.departureTime) > new Date()) {
+      data.forEach((a: any) => {
+        if (a.reviews.length > 0) {
           filteredData.push(a)
         }
       })
-
       filteredData.sort((a: any, b: any) => {
         return (
-          new Date(a.departureTime).getTime() -
-          new Date(b.departureTime).getTime()
+          new Date(b.departureTime).getTime() -
+          new Date(a.departureTime).getTime()
         )
       })
       flights.value = filteredData
@@ -197,7 +199,6 @@ export default defineComponent({
               v-model="departureDateInput"
               type="date"
               id="departureDate"
-              :min="new Date(Date.now()).toISOString().split('T')[0]"
               class="
                 px-4
                 py-3.5
@@ -218,7 +219,6 @@ export default defineComponent({
               v-model="arrivalDateInput"
               type="date"
               id="arrivalDate"
-              :min="new Date(Date.now()).toISOString().split('T')[0]"
               class="
                 px-4
                 py-3.5
@@ -242,7 +242,7 @@ export default defineComponent({
         class="mx-auto max-w-7xl p-6 sm:p-8"
       >
         <h1 class="text-2xl mb-8 font-bold">Flights</h1>
-        <FlightGrid
+        <AdminFlightGrid
           v-for="flight of filteredFlights"
           :key="flight.id"
           :data="flight"

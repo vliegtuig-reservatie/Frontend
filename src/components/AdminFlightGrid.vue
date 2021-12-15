@@ -77,7 +77,7 @@ export default defineComponent({
       </p>
       <div class="text-center mx-auto col-span-2 sm:col-span-1 sm:my-0 my-8">
         <RouterLink
-          :to="'/booking/' + props.data.id"
+          :to="'/admin/' + props.data.id"
           class="
             bg-blue
             text-white
@@ -90,13 +90,13 @@ export default defineComponent({
             flex
             relative
             h-14
-            w-28
+            w-36
             items-center
             hover:bg-blue-dark
             transition-all
           "
         >
-          BOOK
+          REVIEWS
           <svg
             class="
               absolute

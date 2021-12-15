@@ -4,6 +4,7 @@ import {
   browserLocalPersistence,
   createUserWithEmailAndPassword,
   getAuth,
+  sendPasswordResetEmail,
   setPersistence,
   signInWithEmailAndPassword,
   signOut,
@@ -44,6 +45,7 @@ export default () => {
         auth.onAuthStateChanged(async state => {
           if (state) {
             user.value = state
+            console.log(user.value)
             resolve(true)
           } else {
             resolve(false)
@@ -84,6 +86,7 @@ export default () => {
               },
             },
           )
+          await user.value.getIdToken(true)
           resolve(true)
         })
         .catch(error => {
@@ -99,7 +102,20 @@ export default () => {
       signInWithEmailAndPassword(auth, email, password)
         .then(async userCredential => {
           user.value = userCredential.user
-          console.log(userCredential.user)
+          resolve(true)
+        })
+        .catch(error => {
+          const errorCode = error.code
+          const errorMessage = error.message
+          reject(false)
+        })
+    })
+  }
+
+  const resetPassword = (email: string): Promise<boolean> => {
+    return new Promise((resolve, reject) => {
+      sendPasswordResetEmail(auth, email)
+        .then(() => {
           resolve(true)
         })
         .catch(error => {
@@ -119,6 +135,7 @@ export default () => {
     restoreAuth,
     login,
     logout,
+    resetPassword,
 
     user: readonly(user),
   }
