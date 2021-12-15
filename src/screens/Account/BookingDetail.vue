@@ -268,6 +268,7 @@ export default defineComponent({
               v-model="reviewInput"
               type="text"
               id="reviewDescription"
+              maxlength="255"
               class="
                 px-4
                 py-3.5

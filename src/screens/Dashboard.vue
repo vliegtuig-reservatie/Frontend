@@ -51,6 +51,13 @@ export default defineComponent({
           filteredData.push(a)
         }
       })
+
+      filteredData.sort((a: any, b: any) => {
+        return (
+          new Date(a.departureTime).getTime() -
+          new Date(b.departureTime).getTime()
+        )
+      })
       flights.value = filteredData
     }
 
