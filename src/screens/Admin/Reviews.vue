@@ -41,7 +41,9 @@ export default defineComponent({
         { id: flightId.value },
       )
       if (data.reviews.length > 1) {
-        const sum = data.reviews.reduce((a: any, b: any) => a.stars + b.stars)
+        const sum = data.reviews
+          .map((i: any) => i.stars)
+          .reduce((a: any, b: any) => a + b)
         data.avgStars = Math.round((sum / data.reviews.length) * 10) / 10
       } else {
         data.avgStars = Math.round(data.reviews[0].stars * 10) / 10
@@ -73,13 +75,13 @@ export default defineComponent({
             break
         }
       }
-      data.fiveStarPercentage = (fiveStarCount / reviewCount) * 100
-      data.fourStarPercentage = (fourStarCount / reviewCount) * 100
-      data.threeStarPercentage = (threeStarCount / reviewCount) * 100
-      data.twoStarPercentage = (twoStarCount / reviewCount) * 100
-      data.oneStarPercentage = (oneStarCount / reviewCount) * 100
-
-      console.log(fourStarCount)
+      data.fiveStarPercentage = Math.round((fiveStarCount / reviewCount) * 100)
+      data.fourStarPercentage = Math.round((fourStarCount / reviewCount) * 100)
+      data.threeStarPercentage = Math.round(
+        (threeStarCount / reviewCount) * 100,
+      )
+      data.twoStarPercentage = Math.round((twoStarCount / reviewCount) * 100)
+      data.oneStarPercentage = Math.round((oneStarCount / reviewCount) * 100)
 
       data.reviews.sort((a: any, b: any) => {
         return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
