@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent, reactive } from 'vue'
+import { defineComponent, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import AppHeader from '../components/AppHeader.vue'
 import useFirebase from '../composables/useFirebase'
@@ -21,6 +21,7 @@ export default defineComponent({
       password: '',
       confirmPassword: '',
     })
+    const errorMessage = ref<string>('')
 
     const registerAccount = (event: Event) => {
       event.preventDefault()
@@ -40,20 +41,35 @@ export default defineComponent({
               userInput.lastName.slice(1),
             userInput.email as string,
             userInput.password as string,
-          ).then((success: boolean) => {
-            if (success) push('/')
-          })
+          ).then(
+            success => {
+              if (success) push('/')
+            },
+            e => {
+              console.log(e.code)
+              switch (e.code) {
+                case 'auth/weak-password':
+                  errorMessage.value = 'Password not strong enough!'
+                  break
+                case 'auth/email-already-in-use':
+                  errorMessage.value = 'Account already exists!'
+                  break
+                case 'auth/too-many-requests':
+                  errorMessage.value = 'Too many attempts, try again later'
+                  break
+              }
+            },
+          )
         } else {
-          console.log('Passwords do not match')
+          errorMessage.value = 'Passwords do not match'
         }
-      } else {
-        console.log('Invalid input', userInput)
       }
     }
 
     return {
       registerAccount,
       userInput,
+      errorMessage,
     }
   },
 })
@@ -80,6 +96,7 @@ export default defineComponent({
       <form @submit="registerAccount($event)">
         <div class="flex justify-between gap-4">
           <input
+            required
             v-model="userInput.firstName"
             type="text"
             id="firstname"
@@ -100,6 +117,7 @@ export default defineComponent({
             placeholder="First name"
           />
           <input
+            required
             v-model="userInput.lastName"
             type="text"
             id="lastname"
@@ -121,6 +139,7 @@ export default defineComponent({
           />
         </div>
         <input
+          required
           v-model="userInput.email"
           type="text"
           id="email"
@@ -141,6 +160,7 @@ export default defineComponent({
           placeholder="Email address"
         />
         <input
+          required
           v-model="userInput.password"
           type="password"
           id="password"
@@ -161,6 +181,7 @@ export default defineComponent({
           placeholder="Password"
         />
         <input
+          required
           v-model="userInput.confirmPassword"
           type="password"
           id="confirm_password"
@@ -180,13 +201,13 @@ export default defineComponent({
           "
           placeholder="Confirm password"
         />
+        <p class="mt-10 text-center py-4 text-red-500">{{ errorMessage }}</p>
         <button
           class="
             bg-blue
             text-white
             px-4
             py-3.5
-            mt-14
             rounded-xl
             w-full
             font-bold

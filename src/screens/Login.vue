@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent, reactive } from 'vue'
+import { defineComponent, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import AppHeader from '../components/AppHeader.vue'
 import useFirebase from '../composables/useFirebase'
@@ -15,20 +15,38 @@ export default defineComponent({
     const { push } = useRouter()
 
     const userInput: User = reactive({ email: '', password: '' })
+    const errorMessage = ref<string>('')
 
     const loginUser = (event: Event) => {
       event.preventDefault()
 
       if (userInput.email && userInput.password) {
-        login(userInput.email, userInput.password).then((success: boolean) => {
-          if (success) push('/')
-        })
+        login(userInput.email, userInput.password).then(
+          success => {
+            if (success) push('/')
+          },
+          e => {
+            console.log(e.code)
+            switch (e.code) {
+              case 'auth/wrong-password':
+                errorMessage.value = 'Incorrect password!'
+                break
+              case 'auth/user-not-found':
+                errorMessage.value = 'User does not exist!'
+                break
+              case 'auth/too-many-requests':
+                errorMessage.value = 'Too many attempts, try again later'
+                break
+            }
+          },
+        )
       }
     }
 
     return {
       loginUser,
       userInput,
+      errorMessage,
     }
   },
 })
@@ -57,6 +75,7 @@ export default defineComponent({
           v-model="userInput.email"
           type="text"
           id="email"
+          required
           class="
             px-4
             py-3.5
@@ -77,6 +96,7 @@ export default defineComponent({
           v-model="userInput.password"
           type="password"
           id="password"
+          required
           class="
             px-4
             py-3.5
@@ -94,13 +114,13 @@ export default defineComponent({
           placeholder="Password"
         />
         <button class="float-right text-blue">Forgot password?</button>
+        <p class="mt-48 text-center py-4 text-red-500">{{ errorMessage }}</p>
         <button
           class="
             bg-blue
             text-white
             px-4
             py-3.5
-            mt-52
             rounded-xl
             w-full
             font-bold

@@ -157,7 +157,7 @@ export default defineComponent({
               <div>
                 <p class="text-neutral-xlight font-bold">
                   {{ reviews.reviews.length }}
-                  {{ reviews.reviews.length > 1 ? 'ratings' : 'rating' }}
+                  {{ reviews.reviews.length > 1 ? 'reviews' : 'review' }}
                 </p>
               </div>
             </div>

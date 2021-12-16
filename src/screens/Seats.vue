@@ -28,6 +28,7 @@ export default defineComponent({
     const seats = ref<Flight>()
     const generatedSeats = ref<any[]>([])
     const selectedSeat = ref()
+    const selectedSeats = ref<any[]>([])
 
     const getSeatCount = async () => {
       const data = await query(
@@ -64,10 +65,6 @@ export default defineComponent({
     }
 
     const onSeatSelected = (r: any, c: any) => {
-      const selectedSeats = generatedSeats.value.filter(
-        e => e.status == 'SELECTED',
-      )
-
       if (selectedSeat.value == getSeat(r, c)) {
         selectedSeat.value = null
       } else {
@@ -82,7 +79,9 @@ export default defineComponent({
             generatedSeats.value[i].position.c == selectedSeat.value.position.c
           ) {
             if (generatedSeats.value[i].status == 'FREE') {
-              if (selectedSeats.length < parseInt(passengerCount.value!)) {
+              if (
+                selectedSeats.value.length < parseInt(passengerCount.value!)
+              ) {
                 generatedSeats.value[i].status = 'SELECTED'
                 selectedSeat.value = null
               }
@@ -96,6 +95,9 @@ export default defineComponent({
           }
         }
       }
+      selectedSeats.value = generatedSeats.value.filter(
+        e => e.status == 'SELECTED',
+      )
     }
 
     const classifier = (r: any, c: any) => {
@@ -117,11 +119,11 @@ export default defineComponent({
     }
 
     const addBookedSeats = async () => {
-      const selectedSeats = generatedSeats.value.filter(
+      selectedSeats.value = generatedSeats.value.filter(
         e => e.status == 'SELECTED',
       )
-      if (selectedSeats.length == parseInt(passengerCount.value!)) {
-        for (let seat of selectedSeats) {
+      if (selectedSeats.value.length == parseInt(passengerCount.value!)) {
+        for (let seat of selectedSeats.value) {
           const response = await query(
             `addBookedSeat`,
             `mutation addBookedSeat($data: SeatQueryInput!, $userId: String!, $flightId: String!) {
@@ -182,6 +184,7 @@ export default defineComponent({
       passengerCount,
       seats,
       generatedSeats,
+      selectedSeats,
       getSeat,
       onSeatSelected,
       classifier,
@@ -283,6 +286,7 @@ export default defineComponent({
           </tr>
         </table>
         <button
+          v-if="selectedSeats.length == passengerCount"
           @click="addBookedSeats()"
           class="
             bg-blue
@@ -311,6 +315,48 @@ export default defineComponent({
               p-1
               bg-blue-dark
               hover:bg-blue
+              rounded
+              mr-4
+              w-6
+              fill-current
+              text-white
+              transition-all
+            "
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+          >
+            <path d="M0 0h24v24H0V0z" fill="none" />
+            <path
+              d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8-8-8z"
+            />
+          </svg>
+        </button>
+        <button
+          v-else
+          class="
+            bg-neutral-xlight
+            text-white
+            px-4
+            py-3.5
+            rounded-xl
+            font-bold
+            flex
+            relative
+            w-32
+            mx-auto
+            mt-12
+            items-center
+            transition-all
+            cursor-not-allowed
+          "
+        >
+          FINISH
+          <svg
+            class="
+              absolute
+              right-0
+              p-1
+              bg-neutral-xlight
               rounded
               mr-4
               w-6

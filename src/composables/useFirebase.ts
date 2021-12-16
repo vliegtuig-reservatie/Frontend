@@ -92,7 +92,7 @@ export default () => {
         .catch(error => {
           const errorCode = error.code
           const errorMessage = error.message
-          reject(false)
+          reject(error)
         })
     })
   }
@@ -107,7 +107,7 @@ export default () => {
         .catch(error => {
           const errorCode = error.code
           const errorMessage = error.message
-          reject(false)
+          reject(error)
         })
     })
   }
