@@ -108,7 +108,7 @@ export default defineComponent({
             case 'FREE':
               return 'bg-blue-light'
             case 'TAKEN':
-              return 'bg-neutral-xlight pointer-events-none border-0'
+              return 'bg-neutral-xlight pointer-events-none border-transparent'
             case 'SELECTED':
               return 'bg-blue'
           }
@@ -259,7 +259,7 @@ export default defineComponent({
                   w-3/4
                   border-2 border-blue-light
                   rounded-t-3xl rounded-b-lg
-                  hover:border-2 hover:border-blue
+                  hover:border-blue
                 "
                 style="padding-bottom: 75%"
               ></button>
