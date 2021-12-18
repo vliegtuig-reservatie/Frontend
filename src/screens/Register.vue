@@ -46,7 +46,6 @@ export default defineComponent({
               if (success) push('/')
             },
             e => {
-              console.log(e.code)
               switch (e.code) {
                 case 'auth/weak-password':
                   errorMessage.value = 'Password not strong enough!'

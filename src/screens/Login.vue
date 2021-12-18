@@ -26,7 +26,6 @@ export default defineComponent({
             if (success) push('/')
           },
           e => {
-            console.log(e.code)
             switch (e.code) {
               case 'auth/wrong-password':
                 errorMessage.value = 'Incorrect password!'

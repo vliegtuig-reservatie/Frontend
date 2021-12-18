@@ -1,0 +1,8 @@
+services:
+  frontend:
+    image: ghcr.io/beirlaenaaron/jetlist-frontend:latest
+    build: .
+    ports:
+      - 8080:8080
+    volumes:
+      - ./src/config.js:/usr/app/src/config.js
