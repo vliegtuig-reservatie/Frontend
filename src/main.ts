@@ -4,11 +4,13 @@ import router from './bootstrap/router'
 import './assets/style/screen.css'
 import useFirebase from './composables/useFirebase'
 
-const app = createApp(App)
+;(async () => {
+  const app = createApp(App)
 
-const { restoreAuth } = useFirebase()
+  const { restoreAuth } = useFirebase()
 
-await restoreAuth()
+  await restoreAuth()
 
-app.use(router)
-app.mount('#app')
+  app.use(router)
+  app.mount('#app')
+})()

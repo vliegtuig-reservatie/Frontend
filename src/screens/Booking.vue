@@ -19,6 +19,7 @@ export default defineComponent({
     )
 
     const flight = ref<Flight>()
+    const passengerCount = ref<number>(1)
 
     const getCurrentFlight = async () => {
       const data = await query(
@@ -38,6 +39,13 @@ export default defineComponent({
               name
               IATACode
             }
+            plane {
+                rowCount
+                columncount
+            }
+            bookedSeats {
+                id
+            }
           }
         }`,
         { id: flightId.value },
@@ -51,12 +59,7 @@ export default defineComponent({
     return {
       flightId,
       flight,
-    }
-  },
-
-  data() {
-    return {
-      passengerCount: 1,
+      passengerCount,
     }
   },
 })
@@ -67,6 +70,10 @@ export default defineComponent({
     <AppHeader />
     <div class="mx-4">
       <div
+        v-if="
+          flight.bookedSeats.length <
+          flight.plane.rowCount * flight.plane.columncount
+        "
         class="
           relative
           mx-auto
@@ -206,9 +213,16 @@ export default defineComponent({
                       focus-visible:ring
                       text-center
                     "
-                    :value="passengerCount"
+                    v-model="passengerCount"
                     min="1"
-                    oninput="validity.valid||(value='');"
+                    required
+                    :max="
+                      flight.plane.rowCount * flight.plane.columncount -
+                      flight.bookedSeats.length
+                    "
+                    @input="
+                      passengerCount < 0 ? (passengerCount = 1) : passengerCount
+                    "
                   />
                   <button
                     @click="
@@ -347,7 +361,76 @@ export default defineComponent({
             </div>
           </div>
         </div>
+        <div
+          v-if="
+            passengerCount >
+            flight.plane.rowCount * flight.plane.columncount -
+              flight.bookedSeats.length
+          "
+          class="
+            bg-red-500
+            w-full
+            max-w-sm
+            py-3
+            px-4
+            rounded-lg
+            text-white
+            flex
+            mx-auto
+            mt-4
+            items-center
+          "
+        >
+          <div class="mr-4">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              class="
+                text-white
+                fill-current
+                bg-neutral-xlight
+                rounded-full
+                w-6
+                h-6
+                p-1
+                hover:bg-neutral-light
+              "
+            >
+              <path d="M0 0h24v24H0V0z" fill="none" />
+              <circle cx="12" cy="19" r="2" />
+              <path d="M10 3h4v12h-4z" />
+            </svg>
+          </div>
+          <p
+            v-if="
+              flight.plane.rowCount * flight.plane.columncount -
+                flight.bookedSeats.length ==
+              1
+            "
+          >
+            There is only
+            {{
+              flight.plane.rowCount * flight.plane.columncount -
+              flight.bookedSeats.length
+            }}
+            seat left on this flight!
+          </p>
+          <p v-else>
+            There are only
+            {{
+              flight.plane.rowCount * flight.plane.columncount -
+              flight.bookedSeats.length
+            }}
+            seats left on this flight!
+          </p>
+        </div>
         <RouterLink
+          v-if="
+            passengerCount > 0 &&
+            passengerCount <=
+              flight.plane.rowCount * flight.plane.columncount -
+                flight.bookedSeats.length
+          "
           :to="{
             name: 'Seats',
             query: {
@@ -397,6 +480,134 @@ export default defineComponent({
             />
           </svg>
         </RouterLink>
+        <button
+          v-else
+          class="
+            bg-neutral-xlight
+            text-white
+            px-4
+            py-3.5
+            rounded-xl
+            font-bold
+            flex
+            relative
+            w-28
+            mx-auto
+            mt-12
+            items-center
+            transition-all
+            cursor-not-allowed
+          "
+        >
+          NEXT
+          <svg
+            class="
+              absolute
+              right-0
+              p-1
+              bg-neutral-xlight
+              rounded
+              mr-4
+              w-6
+              fill-current
+              text-white
+              transition-all
+            "
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+          >
+            <path d="M0 0h24v24H0V0z" fill="none" />
+            <path
+              d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8-8-8z"
+            />
+          </svg>
+        </button>
+      </div>
+      <div
+        v-else
+        class="
+          relative
+          mx-auto
+          max-w-7xl
+          p-6
+          sm:p-8
+          -mt-20
+          rounded-3xl
+          bg-white
+          shadow
+          z-10
+        "
+      >
+        <div class="flex">
+          <div class="w-full">
+            <div class="flex items-center text-sm -mt-4">
+              <RouterLink to="/">Dashboard</RouterLink>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="24px"
+                viewBox="0 0 24 24"
+                class="w-5"
+                fill="#000000"
+              >
+                <path d="M0 0h24v24H0V0z" fill="none" />
+                <path
+                  d="M10.02 6L8.61 7.41 13.19 12l-4.58 4.59L10.02 18l6-6-6-6z"
+                />
+              </svg>
+              <p class="text-neutral-xlight pointer-events-none">Booking</p>
+            </div>
+            <h1 class="text-2xl mb-4 font-bold">Confirm your booking</h1>
+            <div class="flex border-t-2 border-blue-light">
+              <div
+                v-if="
+                  passengerCount >
+                  flight.plane.rowCount * flight.plane.columncount -
+                    flight.bookedSeats.length
+                "
+                class="
+                  bg-red-500
+                  w-full
+                  max-w-md
+                  py-3
+                  px-4
+                  rounded-lg
+                  text-white
+                  flex
+                  mt-4
+                  items-center
+                "
+              >
+                <div class="mr-4">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    class="
+                      text-white
+                      fill-current
+                      bg-neutral-xlight
+                      rounded-full
+                      w-6
+                      h-6
+                      p-1
+                      hover:bg-neutral-light
+                    "
+                  >
+                    <path d="M0 0h24v24H0V0z" fill="none" />
+                    <circle cx="12" cy="19" r="2" />
+                    <path d="M10 3h4v12h-4z" />
+                  </svg>
+                </div>
+                <p class="font-bold">
+                  There are no seats left on this flight! <br />
+                  <span class="font-normal"
+                    >Flight control has been alerted to make a second flight
+                    available if possible.</span
+                  >
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
