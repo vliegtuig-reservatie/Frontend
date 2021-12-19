@@ -2,17 +2,23 @@
   "name": "vliegtuig-reservatie",
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite",
+    "serve": "vite preview",
     "build": "vite build",
-    "serve": "vite preview"
+    "test:unit": "vue-cli-service test:unit",
+    "test:e2e": "vue-cli-service test:e2e",
+    "dev": "vite"
   },
   "dependencies": {
+    "@vue/cli-service": "^4.5.15",
     "firebase": "^9.2.0",
     "vue": "^3.2.16",
     "vue-router": "^4.0.12"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^1.9.3",
+    "@vue/cli-plugin-e2e-cypress": "~4.5.0",
+    "@vue/cli-plugin-unit-jest": "~4.5.0",
+    "@vue/test-utils": "^2.0.0-0",
     "autoprefixer": "^10.4.0",
     "postcss": "^8.3.11",
     "tailwindcss": "^2.2.19",
@@ -20,6 +26,7 @@
     "vite": "^2.6.4",
     "vite-plugin-fonts": "^0.2.2",
     "vite-plugin-pwa": "^0.11.3",
+    "vue-jest": "^5.0.0-0",
     "vue-tsc": "^0.3.0",
     "workbox-precaching": "^6.3.0"
   }
