@@ -1,8 +1,14 @@
 import { getAuth } from '@firebase/auth'
 
+declare global {
+  interface Window {
+    _env_: any
+  }
+}
+
 export default () => {
   const query = async (name: string, query: string, variables?: Object) => {
-    const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}`, {
+    const res = await fetch(`${window._env_.backendUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
