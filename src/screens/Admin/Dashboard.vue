@@ -108,18 +108,7 @@ export default defineComponent({
     <AppHeader />
     <div class="mx-4">
       <div
-        class="
-          relative
-          mx-auto
-          max-w-7xl
-          p-6
-          sm:p-8
-          -mt-20
-          rounded-3xl
-          bg-white
-          shadow
-          z-10
-        "
+        class="relative mx-auto max-w-7xl p-6 sm:p-8 -mt-20 rounded-3xl bg-white shadow z-10"
       >
         <div class="flex flex-col lg:justify-between lg:flex-row gap-6">
           <div class="flex justify-between w-full">
@@ -127,31 +116,11 @@ export default defineComponent({
               v-model="departureInput"
               type="text"
               id="departure"
-              class="
-                px-4
-                py-3.5
-                rounded-xl
-                bg-blue-xlight
-                border-2 border-blue-light
-                text-neutral
-                placeholder-neutral-xlight
-                w-full
-                hover:border-blue
-                focus:outline-none
-                focus-visible:ring
-              "
+              class="px-4 py-3.5 rounded-xl bg-blue-xlight border-2 border-blue-light text-neutral placeholder-neutral-xlight w-full hover:border-blue focus:outline-none focus-visible:ring"
               placeholder="Departure"
             />
             <div
-              class="
-                p-3
-                rounded-full
-                bg-white
-                -ml-3
-                -mr-3
-                border-blue-light border-2
-                z-10
-              "
+              class="p-3 rounded-full bg-white -ml-3 -mr-3 border-blue-light border-2 z-10"
             >
               <svg
                 class="w-8"
@@ -178,19 +147,7 @@ export default defineComponent({
               v-model="arrivalInput"
               type="text"
               id="arrival"
-              class="
-                px-4
-                py-3.5
-                rounded-xl
-                bg-blue-xlight
-                border-2 border-blue-light
-                text-neutral
-                placeholder-neutral-xlight
-                w-full
-                hover:border-blue
-                focus:outline-none
-                focus-visible:ring
-              "
+              class="px-4 py-3.5 rounded-xl bg-blue-xlight border-2 border-blue-light text-neutral placeholder-neutral-xlight w-full hover:border-blue focus:outline-none focus-visible:ring"
               placeholder="Arrival"
             />
           </div>
@@ -199,46 +156,25 @@ export default defineComponent({
               v-model="departureDateInput"
               type="date"
               id="departureDate"
-              class="
-                px-4
-                py-3.5
-                rounded-xl rounded-tr-none rounded-br-none
-                bg-blue-xlight
-                border-2 border-blue-light
-                -mr-px
-                text-neutral
-                placeholder-neutral-xlight
-                w-full
-                hover:border-blue hover:z-10
-                focus:outline-none focus:z-20
-                focus-visible:ring
-              "
+              class="px-4 py-3.5 rounded-xl rounded-tr-none rounded-br-none bg-blue-xlight border-2 border-blue-light -mr-px text-neutral placeholder-neutral-xlight w-full hover:border-blue hover:z-10 focus:outline-none focus:z-20 focus-visible:ring"
               placeholder="Departure Date"
             />
             <input
               v-model="arrivalDateInput"
               type="date"
               id="arrivalDate"
-              class="
-                px-4
-                py-3.5
-                rounded-xl rounded-tl-none rounded-bl-none
-                bg-blue-xlight
-                border-2 border-blue-light
-                text-neutral
-                placeholder-neutral-xlight
-                w-full
-                hover:border-blue hover:z-10
-                focus:outline-none focus:z-20
-                focus-visible:ring
-              "
+              class="px-4 py-3.5 rounded-xl rounded-tl-none rounded-bl-none bg-blue-xlight border-2 border-blue-light text-neutral placeholder-neutral-xlight w-full hover:border-blue hover:z-10 focus:outline-none focus:z-20 focus-visible:ring"
               placeholder="Arrival Date"
             />
           </div>
         </div>
       </div>
       <div
-        v-if="flights && Object.keys(flights).length !== 0"
+        v-if="
+          flights &&
+          Object.keys(flights).length !== 0 &&
+          Object.keys(filteredFlights).length !== 0
+        "
         class="mx-auto max-w-7xl p-6 sm:p-8"
       >
         <h1 class="text-2xl mb-8 font-bold">Flights</h1>
@@ -247,6 +183,16 @@ export default defineComponent({
           :key="flight.id"
           :data="flight"
         />
+      </div>
+      <div
+        class="text-center p-10"
+        v-else-if="
+          flights &&
+          Object.keys(flights).length !== 0 &&
+          Object.keys(filteredFlights).length == 0
+        "
+      >
+        <h1>Theres no flights based on these search results.</h1>
       </div>
       <div v-else class="mx-auto max-w-7xl p-6 sm:p-8">
         <h1 class="text-2xl mb-8 font-bold">Flights</h1>
