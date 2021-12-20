@@ -76,43 +76,11 @@ export default defineComponent({
       </p>
       <RouterLink
         :to="'/account/bookings/' + props.data.id"
-        class="
-          bg-blue
-          text-white
-          px-4
-          py-3.5
-          rounded-xl
-          font-bold
-          focus:outline-none
-          focus-visible:ring
-          flex
-          relative
-          h-14
-          w-32
-          mx-auto
-          col-span-2
-          my-8
-          sm:col-span-1 sm:my-0
-          items-center
-          hover:bg-blue-dark
-          transition-all
-        "
+        class="bg-blue text-white px-4 py-3.5 rounded-xl font-bold focus:outline-none focus-visible:ring flex relative h-14 w-32 mx-auto col-span-2 my-8 sm:col-span-1 sm:my-0 items-center hover:bg-blue-dark transition-all"
       >
         DETAILS
         <svg
-          class="
-            absolute
-            right-0
-            p-1
-            bg-blue-dark
-            hover:bg-blue
-            rounded
-            mr-4
-            w-6
-            fill-current
-            text-white
-            transition-all
-          "
+          class="absolute right-0 p-1 bg-blue-dark hover:bg-blue rounded mr-4 w-6 fill-current text-white transition-all"
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
         >

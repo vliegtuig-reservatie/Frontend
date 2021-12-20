@@ -24,7 +24,9 @@ export default defineComponent({
 
     const flight = ref<Flight>()
     const review = ref<Review>()
-    const generatedSeats = ref<any[]>([])
+    const generatedSeatsFirst = ref<any[]>([])
+    const generatedSeatsBusiness = ref<any[]>([])
+    const generatedSeatsEconomy = ref<any[]>([])
     const rating = ref<number>(0)
     const hoverStars = ref<boolean>(false)
     const reviewInput = ref<string>('')
@@ -37,11 +39,18 @@ export default defineComponent({
                 bookedSeats {
                     column
                     row
+                    class
                     flight {
                         id
                         plane {
                             rowCount
                             columncount
+                            businessRowCount
+                            businessColumncount
+                            firstclassRowCount
+                            firstclassColumncount
+                            economyRowCount
+                            economyColumncount
                         }
                     }
                 }
@@ -54,15 +63,22 @@ export default defineComponent({
       var seats = <any>[]
       await data.bookedSeats.forEach(function (a: any) {
         groupedData[a.flight.id] = groupedData[a.flight.id] || []
-        seats.push({ row: a.row, column: a.column })
+        seats.push({ row: a.row, column: a.column, class: a.class })
         groupedData = {
           id: a.flight.id,
           rowCount: a.flight.plane.rowCount,
           columnCount: a.flight.plane.columncount,
+          businessRowCount: a.flight.plane.businessRowCount,
+          businessColumncount: a.flight.plane.businessColumncount,
+          firstclassRowCount: a.flight.plane.firstclassRowCount,
+          firstclassColumncount: a.flight.plane.firstclassColumncount,
+          economyRowCount: a.flight.plane.economyRowCount,
+          economyColumncount: a.flight.plane.economyColumncount,
           bookedSeats: seats,
         }
       })
 
+      console.log(groupedData)
       flight.value = groupedData
     }
 
@@ -86,20 +102,68 @@ export default defineComponent({
       }
     }
 
-    const getSeat = (r: any, c: any) => {
-      for (let i = 0; i < generatedSeats.value.length; ++i) {
+    const getSeatFirst = (r: any, c: any) => {
+      for (let i = 0; i < generatedSeatsFirst.value.length; ++i) {
         if (
-          generatedSeats.value[i].position.r == r &&
-          generatedSeats.value[i].position.c == c
+          generatedSeatsFirst.value[i].position.r == r &&
+          generatedSeatsFirst.value[i].position.c == c
         ) {
-          return generatedSeats.value[i]
+          return generatedSeatsFirst.value[i]
         }
       }
       return null
     }
 
-    const classifier = (r: any, c: any) => {
-      let seat = getSeat(r, c)
+    const getSeatBusiness = (r: any, c: any) => {
+      for (let i = 0; i < generatedSeatsBusiness.value.length; ++i) {
+        if (
+          generatedSeatsBusiness.value[i].position.r == r &&
+          generatedSeatsBusiness.value[i].position.c == c
+        ) {
+          return generatedSeatsBusiness.value[i]
+        }
+      }
+      return null
+    }
+
+    const getSeatEconomy = (r: any, c: any) => {
+      for (let i = 0; i < generatedSeatsEconomy.value.length; ++i) {
+        if (
+          generatedSeatsEconomy.value[i].position.r == r &&
+          generatedSeatsEconomy.value[i].position.c == c
+        ) {
+          return generatedSeatsEconomy.value[i]
+        }
+      }
+      return null
+    }
+
+    const classifierFirst = (r: any, c: any) => {
+      let seat = getSeatFirst(r, c)
+      if (seat != null) {
+        switch (seat.status) {
+          case 'FREE':
+            return 'bg-blue-light'
+          case 'BOOKED':
+            return 'bg-blue'
+        }
+      }
+    }
+
+    const classifierBusiness = (r: any, c: any) => {
+      let seat = getSeatBusiness(r, c)
+      if (seat != null) {
+        switch (seat.status) {
+          case 'FREE':
+            return 'bg-blue-light'
+          case 'BOOKED':
+            return 'bg-blue'
+        }
+      }
+    }
+
+    const classifierEconomy = (r: any, c: any) => {
+      let seat = getSeatEconomy(r, c)
       if (seat != null) {
         switch (seat.status) {
           case 'FREE':
@@ -111,19 +175,47 @@ export default defineComponent({
     }
 
     const generateSeats = () => {
-      if (flight.value !== undefined) {
-        for (let y = 1; y <= flight.value?.rowCount; ++y) {
-          for (let x = 1; x <= flight.value?.columnCount; ++x) {
-            generatedSeats.value.push({
+      if (flight.value != undefined) {
+        for (let y = 1; y <= flight.value?.firstclassRowCount; ++y) {
+          for (let x = 1; x <= flight.value?.firstclassColumncount; ++x) {
+            generatedSeatsFirst.value.push({
               position: { r: y, c: x },
               status: 'FREE',
+              class: 'F',
+            })
+          }
+        }
+        for (let y = 1; y <= flight.value?.businessRowCount; ++y) {
+          for (let x = 1; x <= flight.value?.businessColumncount; ++x) {
+            generatedSeatsBusiness.value.push({
+              position: { r: y, c: x },
+              status: 'FREE',
+              class: 'B',
+            })
+          }
+        }
+        for (let y = 1; y <= flight.value?.economyRowCount; ++y) {
+          for (let x = 1; x <= flight.value?.economyColumncount; ++x) {
+            generatedSeatsEconomy.value.push({
+              position: { r: y, c: x },
+              status: 'FREE',
+              class: 'E',
             })
           }
         }
         for (let bookedSeat of flight.value.bookedSeats) {
-          let seat = getSeat(bookedSeat.row, bookedSeat.column)
-          if (seat != null) {
+          let seat = getSeatFirst(bookedSeat.row, bookedSeat.column)
+          let seatBusiness = getSeatBusiness(bookedSeat.row, bookedSeat.column)
+          let seatEconomy = getSeatEconomy(bookedSeat.row, bookedSeat.column)
+          console.log(bookedSeat.class)
+          if (seat != null && seat.class == bookedSeat.class) {
             seat.status = 'BOOKED'
+          }
+          if (seatBusiness != null && seatBusiness.class == bookedSeat.class) {
+            seatBusiness.status = 'BOOKED'
+          }
+          if (seatEconomy != null && seatEconomy.class == bookedSeat.class) {
+            seatEconomy.status = 'BOOKED'
           }
         }
       }
@@ -200,12 +292,18 @@ export default defineComponent({
       flightId,
       flight,
       review,
-      generatedSeats,
+      generatedSeatsFirst,
+      generatedSeatsBusiness,
+      generatedSeatsEconomy,
       rating,
       hoverStars,
       reviewInput,
-      getSeat,
-      classifier,
+      getSeatFirst,
+      getSeatBusiness,
+      getSeatEconomy,
+      classifierFirst,
+      classifierBusiness,
+      classifierEconomy,
       createReview,
       updateReview,
       deleteReview,
@@ -219,19 +317,7 @@ export default defineComponent({
     <AppHeader />
     <div class="mx-4">
       <div
-        class="
-          relative
-          mx-auto
-          max-w-7xl
-          p-6
-          sm:p-8
-          -mt-20
-          rounded-3xl
-          bg-white
-          shadow
-          z-10
-          mb-10
-        "
+        class="relative mx-auto max-w-7xl p-6 sm:p-8 -mt-20 rounded-3xl bg-white shadow z-10 mb-10"
       >
         <div class="flex items-center text-sm -mt-4">
           <RouterLink to="/account/bookings">My bookings</RouterLink>
@@ -269,22 +355,7 @@ export default defineComponent({
               type="text"
               id="reviewDescription"
               maxlength="255"
-              class="
-                px-4
-                py-3.5
-                mb-4
-                h-32
-                rounded-xl
-                bg-blue-xlight
-                border-2 border-blue-light
-                text-neutral
-                placeholder-neutral-xlight
-                w-full
-                hover:border-blue
-                focus:outline-none
-                focus-visible:ring
-                transition-colors
-              "
+              class="px-4 py-3.5 mb-4 h-32 rounded-xl bg-blue-xlight border-2 border-blue-light text-neutral placeholder-neutral-xlight w-full hover:border-blue focus:outline-none focus-visible:ring transition-colors"
               placeholder="Write something about this flight.."
             />
 
@@ -329,40 +400,11 @@ export default defineComponent({
                   review === null)
               "
               @click="review !== null ? updateReview() : createReview()"
-              class="
-                bg-blue
-                text-white
-                px-4
-                py-3.5
-                rounded-xl
-                font-bold
-                focus:outline-none
-                focus-visible:ring
-                flex
-                relative
-                w-32
-                mx-auto
-                mt-12
-                items-center
-                hover:bg-blue-dark
-                transition-all
-              "
+              class="bg-blue text-white px-4 py-3.5 rounded-xl font-bold focus:outline-none focus-visible:ring flex relative w-32 mx-auto mt-12 items-center hover:bg-blue-dark transition-all"
             >
               {{ review !== null ? 'UPDATE' : 'SUBMIT' }}
               <svg
-                class="
-                  absolute
-                  right-0
-                  p-1
-                  bg-blue-dark
-                  hover:bg-blue
-                  rounded
-                  mr-4
-                  w-6
-                  fill-current
-                  text-white
-                  transition-all
-                "
+                class="absolute right-0 p-1 bg-blue-dark hover:bg-blue rounded mr-4 w-6 fill-current text-white transition-all"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
               >
@@ -374,37 +416,11 @@ export default defineComponent({
             </button>
             <button
               v-else
-              class="
-                bg-neutral-xlight
-                text-white
-                px-4
-                py-3.5
-                rounded-xl
-                font-bold
-                flex
-                relative
-                w-32
-                mx-auto
-                mt-12
-                items-center
-                transition-all
-                cursor-not-allowed
-              "
+              class="bg-neutral-xlight text-white px-4 py-3.5 rounded-xl font-bold flex relative w-32 mx-auto mt-12 items-center transition-all cursor-not-allowed"
             >
               {{ review !== null ? 'UPDATE' : 'SUBMIT' }}
               <svg
-                class="
-                  absolute
-                  right-0
-                  p-1
-                  bg-neutral-xlight
-                  rounded
-                  mr-4
-                  w-6
-                  fill-current
-                  text-white
-                  transition-all
-                "
+                class="absolute right-0 p-1 bg-neutral-xlight rounded mr-4 w-6 fill-current text-white transition-all"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
               >
@@ -417,21 +433,59 @@ export default defineComponent({
           </div>
           <div v-if="flight">
             <h2 class="text-lg font-bold py-4 text-center">Your seats</h2>
-            <table class="mx-auto">
-              <tr v-for="(row, i) in flight.rowCount" :key="i">
+            <h1
+              class="w-full max-w-md mx-auto text-center mb-4 mt-8 border-t-2 border-blue-light"
+            >
+              First Class
+            </h1>
+            <table v-if="flight" class="mx-auto">
+              <tr v-for="(row, i) in flight.firstclassRowCount" :key="i">
                 <td
-                  v-for="(column, i) in flight.columnCount"
+                  v-for="(column, i) in flight.firstclassColumncount"
                   :key="i"
                   class="px-1"
                 >
                   <button
-                    :class="classifier(row, column)"
-                    class="
-                      w-8
-                      h-8
-                      rounded-t-3xl rounded-b-lg
-                      pointer-events-none
-                    "
+                    :class="classifierFirst(row, column)"
+                    class="w-8 h-8 rounded-t-3xl rounded-b-lg pointer-events-none"
+                  ></button>
+                </td>
+              </tr>
+            </table>
+            <h1
+              class="w-full max-w-md mx-auto text-center mb-4 mt-8 border-t-2 border-blue-light"
+            >
+              Business
+            </h1>
+            <table v-if="flight" class="mx-auto">
+              <tr v-for="(row, i) in flight.businessRowCount" :key="i">
+                <td
+                  v-for="(column, i) in flight.businessColumncount"
+                  :key="i"
+                  class="px-1"
+                >
+                  <button
+                    :class="classifierBusiness(row, column)"
+                    class="w-8 h-8 rounded-t-3xl rounded-b-lg pointer-events-none"
+                  ></button>
+                </td>
+              </tr>
+            </table>
+            <h1
+              class="w-full max-w-md mx-auto text-center mb-4 mt-8 border-t-2 border-blue-light"
+            >
+              Economy
+            </h1>
+            <table v-if="flight" class="mx-auto">
+              <tr v-for="(row, i) in flight.economyRowCount" :key="i">
+                <td
+                  v-for="(column, i) in flight.economyColumncount"
+                  :key="i"
+                  class="px-1"
+                >
+                  <button
+                    :class="classifierEconomy(row, column)"
+                    class="w-8 h-8 rounded-t-3xl rounded-b-lg pointer-events-none"
                   ></button>
                 </td>
               </tr>
@@ -443,13 +497,7 @@ export default defineComponent({
               <tr v-for="(row, i) in 7" :key="i">
                 <td v-for="(column, i) in 5" :key="i" class="px-1">
                   <button
-                    class="
-                      w-8
-                      h-8
-                      bg-blue-light
-                      rounded-t-3xl rounded-b-lg
-                      pointer-events-none
-                    "
+                    class="w-8 h-8 bg-blue-light rounded-t-3xl rounded-b-lg pointer-events-none"
                   ></button>
                 </td>
               </tr>
