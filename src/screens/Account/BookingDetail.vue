@@ -76,7 +76,6 @@ export default defineComponent({
         }
       })
 
-      console.log(groupedData)
       flight.value = groupedData
     }
 
@@ -205,7 +204,6 @@ export default defineComponent({
           let seat = getSeatFirst(bookedSeat.row, bookedSeat.column)
           let seatBusiness = getSeatBusiness(bookedSeat.row, bookedSeat.column)
           let seatEconomy = getSeatEconomy(bookedSeat.row, bookedSeat.column)
-          console.log(bookedSeat.class)
           if (seat != null && seat.class == bookedSeat.class) {
             seat.status = 'BOOKED'
           }

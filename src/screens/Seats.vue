@@ -286,7 +286,6 @@ export default defineComponent({
         selectedSeats.push(selectedSeatsEconomy)
       }
 
-      console.log(selectedSeats)
       for (let seats of selectedSeats) {
         for (let seat of seats.value) {
           const response = await query(
@@ -353,7 +352,6 @@ export default defineComponent({
           let seat = getSeatFirst(bookedSeat.row, bookedSeat.column)
           let seatBusiness = getSeatBusiness(bookedSeat.row, bookedSeat.column)
           let seatEconomy = getSeatEconomy(bookedSeat.row, bookedSeat.column)
-          console.log(bookedSeat.class)
           if (seat != null && seat.class == bookedSeat.class) {
             seat.status = 'TAKEN'
           }
@@ -394,6 +392,14 @@ export default defineComponent({
       classifierBusiness,
       classifierEconomy,
       addBookedSeats,
+    }
+  },
+  data() {
+    return {
+      calcPriceFC: 0,
+      calcPriceBus: 0,
+      calcPriceEco: 0,
+      calcTax: 0,
     }
   },
 })
