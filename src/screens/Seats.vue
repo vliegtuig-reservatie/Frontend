@@ -39,10 +39,11 @@ export default defineComponent({
         'getFlightById',
         `query getFlightById ($id: String = "") {
             getFlightById (id: $id) {
+              priceEconomy
+              priceBusiness
+              priceFirstClass
               plane {
                 id
-                rowCount
-                columncount
                 businessRowCount
                 businessColumncount
                 firstclassRowCount
@@ -437,80 +438,153 @@ export default defineComponent({
         <h1 class="text-2xl mb-4 font-bold border-b-2 border-blue-light pb-4">
           Choose seats for {{ passengerCount }} passenger(s)
         </h1>
-        <h1 class="w-full max-w-md mx-auto text-center mb-4 mt-8">
-          First Class
-        </h1>
-        <table v-if="seats" class="mx-auto w-full max-w-lg whitespace-nowrap">
-          <tr v-for="(row, i) in seats.plane.firstclassRowCount" :key="i">
-            <td
-              v-for="(column, i) in seats.plane.firstclassColumncount"
-              :key="i"
-              class="px-0 lg:px-1 text-center"
+        <div class="flex flex-col md:flex-row md:justify-between">
+          <div class="md:w-full md:mx-16">
+            <h1 class="w-full max-w-md mx-auto text-center mb-4 mt-8">
+              First Class
+            </h1>
+            <table
+              v-if="seats"
+              class="mx-auto w-full max-w-lg whitespace-nowrap"
             >
-              <button
-                @click="onSeatSelectedFirst(row, column)"
-                :class="classifierFirst(row, column)"
-                class="w-3/4 border-2 border-blue-light rounded-t-3xl rounded-b-lg hover:border-blue"
-                style="padding-bottom: 75%"
-              ></button>
-            </td>
-          </tr>
-        </table>
-        <h1
-          class="w-full max-w-md mx-auto text-center mb-4 mt-8 border-t-2 border-blue-light"
-        >
-          Business
-        </h1>
-        <table v-if="seats" class="mx-auto w-full max-w-lg whitespace-nowrap">
-          <tr v-for="(row, i) in seats.plane.businessRowCount" :key="i">
-            <td
-              v-for="(column, i) in seats.plane.businessColumncount"
-              :key="i"
-              class="px-0 lg:px-1 text-center"
+              <tr v-for="(row, i) in seats.plane.firstclassRowCount" :key="i">
+                <td
+                  v-for="(column, i) in seats.plane.firstclassColumncount"
+                  :key="i"
+                  class="px-0 lg:px-1 text-center"
+                >
+                  <button
+                    @click="onSeatSelectedFirst(row, column)"
+                    :class="classifierFirst(row, column)"
+                    class="w-3/4 border-2 border-blue-light rounded-t-3xl rounded-b-lg hover:border-blue"
+                    style="padding-bottom: 75%"
+                  ></button>
+                </td>
+              </tr>
+            </table>
+            <h1
+              class="w-full max-w-md mx-auto text-center mb-4 mt-8 border-t-2 border-blue-light"
             >
-              <button
-                @click="onSeatSelectedBusiness(row, column)"
-                :class="classifierBusiness(row, column)"
-                class="w-3/4 border-2 border-blue-light rounded-t-3xl rounded-b-lg hover:border-blue"
-                style="padding-bottom: 75%"
-              ></button>
-            </td>
-          </tr>
-        </table>
-        <h1
-          class="w-full max-w-md mx-auto text-center mb-4 mt-8 border-t-2 border-blue-light"
-        >
-          Economy
-        </h1>
-        <table v-if="seats" class="mx-auto w-full max-w-lg whitespace-nowrap">
-          <tr v-for="(row, i) in seats.plane.economyRowCount" :key="i">
-            <td
-              v-for="(column, i) in seats.plane.economyColumncount"
-              :key="i"
-              class="px-0 lg:px-1 text-center"
+              Business
+            </h1>
+            <table
+              v-if="seats"
+              class="mx-auto w-full max-w-lg whitespace-nowrap"
             >
-              <button
-                @click="onSeatSelectedEconomy(row, column)"
-                :class="classifierEconomy(row, column)"
-                class="w-3/4 border-2 border-blue-light rounded-t-3xl rounded-b-lg hover:border-blue"
-                style="padding-bottom: 75%"
-              ></button>
-            </td>
-          </tr>
-        </table>
-        <table
-          v-else
-          class="mx-auto w-full max-w-lg whitespace-nowrap animate-pulse"
-        >
-          <tr v-for="(row, i) in 4" :key="i">
-            <td v-for="(column, i) in 6" :key="i" class="px-0 lg:px-1">
-              <button
-                class="w-3/4 bg-blue-light border-2 border-blue-light rounded-t-3xl rounded-b-lg pointer-events-none"
-                style="padding-bottom: 75%"
-              ></button>
-            </td>
-          </tr>
-        </table>
+              <tr v-for="(row, i) in seats.plane.businessRowCount" :key="i">
+                <td
+                  v-for="(column, i) in seats.plane.businessColumncount"
+                  :key="i"
+                  class="px-0 lg:px-1 text-center"
+                >
+                  <button
+                    @click="onSeatSelectedBusiness(row, column)"
+                    :class="classifierBusiness(row, column)"
+                    class="w-3/4 border-2 border-blue-light rounded-t-3xl rounded-b-lg hover:border-blue"
+                    style="padding-bottom: 75%"
+                  ></button>
+                </td>
+              </tr>
+            </table>
+            <h1
+              class="w-full max-w-md mx-auto text-center mb-4 mt-8 border-t-2 border-blue-light"
+            >
+              Economy
+            </h1>
+            <table
+              v-if="seats"
+              class="mx-auto w-full max-w-lg whitespace-nowrap"
+            >
+              <tr v-for="(row, i) in seats.plane.economyRowCount" :key="i">
+                <td
+                  v-for="(column, i) in seats.plane.economyColumncount"
+                  :key="i"
+                  class="px-0 lg:px-1 text-center"
+                >
+                  <button
+                    @click="onSeatSelectedEconomy(row, column)"
+                    :class="classifierEconomy(row, column)"
+                    class="w-3/4 border-2 border-blue-light rounded-t-3xl rounded-b-lg hover:border-blue"
+                    style="padding-bottom: 75%"
+                  ></button>
+                </td>
+              </tr>
+            </table>
+          </div>
+          <div class="w-full mx-auto md:mx-0 max-w-sm mt-8">
+            <div
+              class="bg-blue-xlight border-2 border-blue-light rounded-2xl px-5 py-3 mx-auto sm:mx-0"
+            >
+              <div v-if="seats" class="leading-8">
+                <h1 class="text-2xl mb-4 font-bold">Summary</h1>
+
+                <p class="border-b-2 border-blue-light mb-4">
+                  {{ passengerCount }}x Passenger(s)
+                </p>
+                <div class="flex justify-between leading-6">
+                  <p>First Class seats</p>
+                  <p class="font-bold">
+                    €{{
+                      Math.floor(
+                        (calcPriceFC =
+                          seats.priceFirstClass * selectedSeatsFirst.length),
+                      )
+                    }}
+                  </p>
+                </div>
+                <div class="flex justify-between leading-6">
+                  <p>Business seats</p>
+                  <p class="font-bold">
+                    €{{
+                      Math.floor(
+                        (calcPriceBus =
+                          seats.priceBusiness * selectedSeatsBusiness.length),
+                      )
+                    }}
+                  </p>
+                </div>
+                <div class="flex justify-between leading-6 mb-4">
+                  <p>Economy seats</p>
+                  <p class="font-bold">
+                    €{{
+                      Math.floor(
+                        (calcPriceEco =
+                          seats.priceEconomy * selectedSeatsEconomy.length),
+                      )
+                    }}
+                  </p>
+                </div>
+                <div class="flex justify-between">
+                  <p>21% tax</p>
+                  <p class="font-bold">
+                    €{{
+                      Math.floor(
+                        (calcTax =
+                          (calcPriceFC + calcPriceBus + calcPriceEco) * 0.21),
+                      )
+                    }}
+                  </p>
+                </div>
+                <div class="flex justify-between">
+                  <p>Service fee</p>
+                  <p class="font-bold">€2</p>
+                </div>
+              </div>
+              <div
+                class="flex justify-between bg-blue-light px-3 py-2 mt-6 rounded-lg"
+              >
+                <p>Total</p>
+                <p class="font-bold">
+                  €{{
+                    Math.floor(
+                      calcPriceFC + calcPriceBus + calcPriceEco + calcTax + 2,
+                    )
+                  }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
         <button
           v-if="
             selectedSeatsFirst.length +

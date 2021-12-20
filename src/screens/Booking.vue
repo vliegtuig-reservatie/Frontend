@@ -28,7 +28,6 @@ export default defineComponent({
           getFlightById (id: $id) {
             departureTime
             arrivalTime
-            price
             departureLocation {
               id
               name
@@ -40,8 +39,6 @@ export default defineComponent({
               IATACode
             }
             plane {
-                rowCount
-                columncount
                 businessRowCount
                 businessColumncount
                 firstclassRowCount
@@ -228,17 +225,25 @@ export default defineComponent({
           >
             <div class="leading-8">
               <h1 class="text-2xl mb-4 font-bold">Summary</h1>
-              <div class="flex justify-between">
-                <p>{{ passengerCount }}x Passenger(s)</p>
-                <p class="font-bold">
-                  €{{ (pricePassengers = flight.price * passengerCount) }}
-                </p>
+
+              <p class="border-b-2 border-blue-light mb-4">
+                {{ passengerCount }}x Passenger(s)
+              </p>
+              <div class="flex justify-between leading-6">
+                <p>First Class seats</p>
+                <p class="font-bold">€0</p>
+              </div>
+              <div class="flex justify-between leading-6">
+                <p>Business seats</p>
+                <p class="font-bold">€0</p>
+              </div>
+              <div class="flex justify-between leading-6 mb-4">
+                <p>Economy seats</p>
+                <p class="font-bold">€0</p>
               </div>
               <div class="flex justify-between">
                 <p>21% tax</p>
-                <p class="font-bold">
-                  €{{ Math.floor((priceTax = pricePassengers * 0.21)) }}
-                </p>
+                <p class="font-bold">€0</p>
               </div>
               <div class="flex justify-between">
                 <p>Service fee</p>
@@ -249,9 +254,7 @@ export default defineComponent({
               class="flex justify-between bg-blue-light px-3 py-2 rounded-lg"
             >
               <p>Total</p>
-              <p class="font-bold">
-                €{{ Math.floor((totalPrice = pricePassengers + priceTax + 2)) }}
-              </p>
+              <p class="font-bold">€2</p>
             </div>
           </div>
         </div>

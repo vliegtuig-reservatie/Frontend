@@ -43,8 +43,6 @@ export default defineComponent({
                     flight {
                         id
                         plane {
-                            rowCount
-                            columncount
                             businessRowCount
                             businessColumncount
                             firstclassRowCount
@@ -434,7 +432,7 @@ export default defineComponent({
           <div v-if="flight">
             <h2 class="text-lg font-bold py-4 text-center">Your seats</h2>
             <h1
-              class="w-full max-w-md mx-auto text-center mb-4 mt-8 border-t-2 border-blue-light"
+              class="w-full max-w-md mx-auto text-center mb-4 border-t-2 border-blue-light"
             >
               First Class
             </h1>
