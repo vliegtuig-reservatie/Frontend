@@ -96,7 +96,11 @@ export default defineComponent({
               }),
             ),
 
-            new Date(props.data.updatedAt),
+            new Date(
+              new Date(props.data.updatedAt).toLocaleString('en-US', {
+                timeZone: 'UTC',
+              }),
+            ),
           )
         }}
       </p>
