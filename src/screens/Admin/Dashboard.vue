@@ -177,7 +177,25 @@ export default defineComponent({
         "
         class="mx-auto max-w-7xl p-6 sm:p-8"
       >
-        <h1 class="text-2xl mb-8 font-bold">Flights</h1>
+        <div class="flex gap-4">
+          <h1 class="text-2xl mb-8 font-bold">Flights</h1>
+          <RouterLink
+            to="/admin/problems"
+            class="bg-red-500 text-white px-4 py-1 rounded-xl font-bold focus:outline-none focus-visible:ring flex relative w-32 h-9 items-center hover:bg-red-600 transition-all"
+          >
+            Problems
+            <svg
+              class="absolute right-0 p-1 bg-neutral-xlight hover:bg-neutral-light rounded-full mr-3 w-6 fill-current text-white transition-all"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+            >
+              <path d="M0 0h24v24H0V0z" fill="none" />
+              <circle cx="12" cy="19" r="2" />
+              <path d="M10 3h4v12h-4z" />
+            </svg>
+          </RouterLink>
+        </div>
+
         <AdminFlightGrid
           v-for="flight of filteredFlights"
           :key="flight.id"
@@ -192,10 +210,11 @@ export default defineComponent({
           Object.keys(filteredFlights).length == 0
         "
       >
-        <h1>Theres no flights based on these search results.</h1>
+        <h1>There are no flights based on these search results.</h1>
       </div>
       <div v-else class="mx-auto max-w-7xl p-6 sm:p-8">
         <h1 class="text-2xl mb-8 font-bold">Flights</h1>
+        <p>There are no reviews yet..</p>
         <div
           class="h-12 rounded-2xl bg-blue-light mb-6 animate-pulse-slow"
         ></div>

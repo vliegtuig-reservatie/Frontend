@@ -26,23 +26,35 @@ export default defineComponent({
     )
 
     const seats = ref<Flight>()
-    const generatedSeats = ref<any[]>([])
+    const generatedSeatsFirst = ref<any[]>([])
+    const generatedSeatsBusiness = ref<any[]>([])
+    const generatedSeatsEconomy = ref<any[]>([])
     const selectedSeat = ref()
-    const selectedSeats = ref<any[]>([])
+    const selectedSeatsFirst = ref<any[]>([])
+    const selectedSeatsBusiness = ref<any[]>([])
+    const selectedSeatsEconomy = ref<any[]>([])
 
     const getSeatCount = async () => {
       const data = await query(
         'getFlightById',
         `query getFlightById ($id: String = "") {
             getFlightById (id: $id) {
+              priceEconomy
+              priceBusiness
+              priceFirstClass
               plane {
                 id
-                rowCount
-                columncount
+                businessRowCount
+                businessColumncount
+                firstclassRowCount
+                firstclassColumncount
+                economyRowCount
+                economyColumncount
               }
               bookedSeats {
                 row
                 column
+                class
               }
             }
           }`,
@@ -52,41 +64,69 @@ export default defineComponent({
       seats.value = data
     }
 
-    const getSeat = (r: any, c: any) => {
-      for (let i = 0; i < generatedSeats.value.length; ++i) {
+    const getSeatFirst = (r: any, c: any) => {
+      for (let i = 0; i < generatedSeatsFirst.value.length; ++i) {
         if (
-          generatedSeats.value[i].position.r == r &&
-          generatedSeats.value[i].position.c == c
+          generatedSeatsFirst.value[i].position.r == r &&
+          generatedSeatsFirst.value[i].position.c == c
         ) {
-          return generatedSeats.value[i]
+          return generatedSeatsFirst.value[i]
         }
       }
       return null
     }
 
-    const onSeatSelected = (r: any, c: any) => {
-      if (selectedSeat.value == getSeat(r, c)) {
+    const getSeatBusiness = (r: any, c: any) => {
+      for (let i = 0; i < generatedSeatsBusiness.value.length; ++i) {
+        if (
+          generatedSeatsBusiness.value[i].position.r == r &&
+          generatedSeatsBusiness.value[i].position.c == c
+        ) {
+          return generatedSeatsBusiness.value[i]
+        }
+      }
+      return null
+    }
+
+    const getSeatEconomy = (r: any, c: any) => {
+      for (let i = 0; i < generatedSeatsEconomy.value.length; ++i) {
+        if (
+          generatedSeatsEconomy.value[i].position.r == r &&
+          generatedSeatsEconomy.value[i].position.c == c
+        ) {
+          return generatedSeatsEconomy.value[i]
+        }
+      }
+      return null
+    }
+
+    const onSeatSelectedFirst = (r: any, c: any) => {
+      if (selectedSeat.value == getSeatFirst(r, c)) {
         selectedSeat.value = null
       } else {
-        selectedSeat.value = getSeat(r, c)
+        selectedSeat.value = getSeatFirst(r, c)
       }
 
       if (selectedSeat.value != null) {
-        for (let i = 0; i < generatedSeats.value.length; ++i) {
+        for (let i = 0; i < generatedSeatsFirst.value.length; ++i) {
           if (
-            generatedSeats.value[i].position.r ==
+            generatedSeatsFirst.value[i].position.r ==
               selectedSeat.value.position.r &&
-            generatedSeats.value[i].position.c == selectedSeat.value.position.c
+            generatedSeatsFirst.value[i].position.c ==
+              selectedSeat.value.position.c
           ) {
-            if (generatedSeats.value[i].status == 'FREE') {
+            if (generatedSeatsFirst.value[i].status == 'FREE') {
               if (
-                selectedSeats.value.length < parseInt(passengerCount.value!)
+                selectedSeatsFirst.value.length +
+                  selectedSeatsBusiness.value.length +
+                  selectedSeatsEconomy.value.length <
+                parseInt(passengerCount.value!)
               ) {
-                generatedSeats.value[i].status = 'SELECTED'
+                generatedSeatsFirst.value[i].status = 'SELECTED'
                 selectedSeat.value = null
               }
-            } else if (generatedSeats.value[i].status == 'SELECTED') {
-              generatedSeats.value[i].status = 'FREE'
+            } else if (generatedSeatsFirst.value[i].status == 'SELECTED') {
+              generatedSeatsFirst.value[i].status = 'FREE'
               selectedSeat.value = null
             } else {
               selectedSeat.value = null
@@ -95,13 +135,129 @@ export default defineComponent({
           }
         }
       }
-      selectedSeats.value = generatedSeats.value.filter(
+      selectedSeatsFirst.value = generatedSeatsFirst.value.filter(
         e => e.status == 'SELECTED',
       )
     }
 
-    const classifier = (r: any, c: any) => {
-      let seat = getSeat(r, c)
+    const onSeatSelectedBusiness = (r: any, c: any) => {
+      if (selectedSeat.value == getSeatBusiness(r, c)) {
+        selectedSeat.value = null
+      } else {
+        selectedSeat.value = getSeatBusiness(r, c)
+      }
+
+      if (selectedSeat.value != null) {
+        for (let i = 0; i < generatedSeatsBusiness.value.length; ++i) {
+          if (
+            generatedSeatsBusiness.value[i].position.r ==
+              selectedSeat.value.position.r &&
+            generatedSeatsBusiness.value[i].position.c ==
+              selectedSeat.value.position.c
+          ) {
+            if (generatedSeatsBusiness.value[i].status == 'FREE') {
+              if (
+                selectedSeatsFirst.value.length +
+                  selectedSeatsBusiness.value.length +
+                  selectedSeatsEconomy.value.length <
+                parseInt(passengerCount.value!)
+              ) {
+                generatedSeatsBusiness.value[i].status = 'SELECTED'
+                selectedSeat.value = null
+              }
+            } else if (generatedSeatsBusiness.value[i].status == 'SELECTED') {
+              generatedSeatsBusiness.value[i].status = 'FREE'
+              selectedSeat.value = null
+            } else {
+              selectedSeat.value = null
+            }
+            break
+          }
+        }
+      }
+      selectedSeatsBusiness.value = generatedSeatsBusiness.value.filter(
+        e => e.status == 'SELECTED',
+      )
+    }
+
+    const onSeatSelectedEconomy = (r: any, c: any) => {
+      if (selectedSeat.value == getSeatEconomy(r, c)) {
+        selectedSeat.value = null
+      } else {
+        selectedSeat.value = getSeatEconomy(r, c)
+      }
+
+      if (selectedSeat.value != null) {
+        for (let i = 0; i < generatedSeatsEconomy.value.length; ++i) {
+          if (
+            generatedSeatsEconomy.value[i].position.r ==
+              selectedSeat.value.position.r &&
+            generatedSeatsEconomy.value[i].position.c ==
+              selectedSeat.value.position.c
+          ) {
+            if (generatedSeatsEconomy.value[i].status == 'FREE') {
+              if (
+                selectedSeatsFirst.value.length +
+                  selectedSeatsBusiness.value.length +
+                  selectedSeatsEconomy.value.length <
+                parseInt(passengerCount.value!)
+              ) {
+                generatedSeatsEconomy.value[i].status = 'SELECTED'
+                selectedSeat.value = null
+              }
+            } else if (generatedSeatsEconomy.value[i].status == 'SELECTED') {
+              generatedSeatsEconomy.value[i].status = 'FREE'
+              selectedSeat.value = null
+            } else {
+              selectedSeat.value = null
+            }
+            break
+          }
+        }
+      }
+      selectedSeatsEconomy.value = generatedSeatsEconomy.value.filter(
+        e => e.status == 'SELECTED',
+      )
+    }
+
+    const classifierFirst = (r: any, c: any) => {
+      let seat = getSeatFirst(r, c)
+      if (seat != null) {
+        if (selectedSeat.value != seat) {
+          switch (seat.status) {
+            case 'FREE':
+              return 'bg-blue-light'
+            case 'TAKEN':
+              return 'bg-neutral-xlight pointer-events-none border-transparent'
+            case 'SELECTED':
+              return 'bg-blue'
+          }
+        } else {
+          return 'bg-blue-light'
+        }
+      }
+    }
+
+    const classifierBusiness = (r: any, c: any) => {
+      let seat = getSeatBusiness(r, c)
+      if (seat != null) {
+        if (selectedSeat.value != seat) {
+          switch (seat.status) {
+            case 'FREE':
+              return 'bg-blue-light'
+            case 'TAKEN':
+              return 'bg-neutral-xlight pointer-events-none border-transparent'
+            case 'SELECTED':
+              return 'bg-blue'
+          }
+        } else {
+          return 'bg-blue-light'
+        }
+      }
+    }
+
+    const classifierEconomy = (r: any, c: any) => {
+      let seat = getSeatEconomy(r, c)
       if (seat != null) {
         if (selectedSeat.value != seat) {
           switch (seat.status) {
@@ -119,30 +275,40 @@ export default defineComponent({
     }
 
     const addBookedSeats = async () => {
-      selectedSeats.value = generatedSeats.value.filter(
-        e => e.status == 'SELECTED',
-      )
-      if (selectedSeats.value.length == parseInt(passengerCount.value!)) {
-        for (let seat of selectedSeats.value) {
+      var selectedSeats = []
+      if (selectedSeatsFirst.value.length > 0) {
+        selectedSeats.push(selectedSeatsFirst)
+      }
+      if (selectedSeatsBusiness.value.length > 0) {
+        selectedSeats.push(selectedSeatsBusiness)
+      }
+      if (selectedSeatsEconomy.value.length > 0) {
+        selectedSeats.push(selectedSeatsEconomy)
+      }
+
+      for (let seats of selectedSeats) {
+        for (let seat of seats.value) {
           const response = await query(
             `addBookedSeat`,
             `mutation addBookedSeat($data: SeatQueryInput!, $userId: String!, $flightId: String!) {
-              addBookedSeat(data: $data, userId: $userId, flightId: $flightId) {
-                id
-                column
-                row
-                passager {
+                addBookedSeat(data: $data, userId: $userId, flightId: $flightId) {
                   id
+                  column
+                  row
+                  class
+                  passager {
+                    id
+                  }
+                  flight {
+                    id
+                  }
                 }
-                flight {
-                  id
-                }
-              }
-            }`,
+              }`,
             {
               data: {
                 row: seat.position.r,
                 column: seat.position.c,
+                class: seat.class,
               },
               userId: user.value?.uid,
               flightId: flightId.value,
@@ -155,18 +321,45 @@ export default defineComponent({
 
     const generateSeats = () => {
       if (seats.value != null) {
-        for (let y = 1; y <= seats.value?.plane.rowCount; ++y) {
-          for (let x = 1; x <= seats.value?.plane.columncount; ++x) {
-            generatedSeats.value.push({
+        for (let y = 1; y <= seats.value?.plane.firstclassRowCount; ++y) {
+          for (let x = 1; x <= seats.value?.plane.firstclassColumncount; ++x) {
+            generatedSeatsFirst.value.push({
               position: { r: y, c: x },
               status: 'FREE',
+              class: 'F',
+            })
+          }
+        }
+        for (let y = 1; y <= seats.value?.plane.businessRowCount; ++y) {
+          for (let x = 1; x <= seats.value?.plane.businessColumncount; ++x) {
+            generatedSeatsBusiness.value.push({
+              position: { r: y, c: x },
+              status: 'FREE',
+              class: 'B',
+            })
+          }
+        }
+        for (let y = 1; y <= seats.value?.plane.economyRowCount; ++y) {
+          for (let x = 1; x <= seats.value?.plane.economyColumncount; ++x) {
+            generatedSeatsEconomy.value.push({
+              position: { r: y, c: x },
+              status: 'FREE',
+              class: 'E',
             })
           }
         }
         for (let bookedSeat of seats.value.bookedSeats) {
-          let seat = getSeat(bookedSeat.row, bookedSeat.column)
-          if (seat != null) {
+          let seat = getSeatFirst(bookedSeat.row, bookedSeat.column)
+          let seatBusiness = getSeatBusiness(bookedSeat.row, bookedSeat.column)
+          let seatEconomy = getSeatEconomy(bookedSeat.row, bookedSeat.column)
+          if (seat != null && seat.class == bookedSeat.class) {
             seat.status = 'TAKEN'
+          }
+          if (seatBusiness != null && seatBusiness.class == bookedSeat.class) {
+            seatBusiness.status = 'TAKEN'
+          }
+          if (seatEconomy != null && seatEconomy.class == bookedSeat.class) {
+            seatEconomy.status = 'TAKEN'
           }
         }
       }
@@ -183,12 +376,30 @@ export default defineComponent({
       flightId,
       passengerCount,
       seats,
-      generatedSeats,
-      selectedSeats,
-      getSeat,
-      onSeatSelected,
-      classifier,
+      generatedSeatsFirst,
+      generatedSeatsBusiness,
+      generatedSeatsEconomy,
+      selectedSeatsFirst,
+      selectedSeatsBusiness,
+      selectedSeatsEconomy,
+      getSeatFirst,
+      getSeatBusiness,
+      getSeatEconomy,
+      onSeatSelectedFirst,
+      onSeatSelectedBusiness,
+      onSeatSelectedEconomy,
+      classifierFirst,
+      classifierBusiness,
+      classifierEconomy,
       addBookedSeats,
+    }
+  },
+  data() {
+    return {
+      calcPriceFC: 0,
+      calcPriceBus: 0,
+      calcPriceEco: 0,
+      calcTax: 0,
     }
   },
 })
@@ -199,19 +410,7 @@ export default defineComponent({
     <AppHeader />
     <div class="mx-4">
       <div
-        class="
-          relative
-          mx-auto
-          max-w-7xl
-          p-6
-          sm:p-8
-          -mt-20
-          rounded-3xl
-          bg-white
-          shadow
-          z-10
-          mb-10
-        "
+        class="relative mx-auto max-w-7xl p-6 sm:p-8 -mt-20 rounded-3xl bg-white shadow z-10 mb-10"
       >
         <div class="flex items-center text-sm -mt-4">
           <RouterLink to="/">Dashboard</RouterLink>
@@ -242,86 +441,169 @@ export default defineComponent({
           </svg>
           <p class="text-neutral-xlight pointer-events-none">Seats</p>
         </div>
-        <h1 class="text-2xl mb-4 font-bold">
+        <h1 class="text-2xl mb-4 font-bold border-b-2 border-blue-light pb-4">
           Choose seats for {{ passengerCount }} passenger(s)
         </h1>
-        <table v-if="seats" class="mx-auto w-full max-w-lg whitespace-nowrap">
-          <tr v-for="(row, i) in seats.plane.rowCount" :key="i">
-            <td
-              v-for="(column, i) in seats.plane.columncount"
-              :key="i"
-              class="px-0 lg:px-1"
+        <div class="flex flex-col md:flex-row md:justify-between">
+          <div class="md:w-full md:mx-16">
+            <h1 class="w-full max-w-md mx-auto text-center mb-4 mt-8">
+              First Class
+            </h1>
+            <table
+              v-if="seats"
+              class="mx-auto w-full max-w-lg whitespace-nowrap"
             >
-              <button
-                @click="onSeatSelected(row, column)"
-                :class="classifier(row, column)"
-                class="
-                  w-3/4
-                  border-2 border-blue-light
-                  rounded-t-3xl rounded-b-lg
-                  hover:border-blue
-                "
-                style="padding-bottom: 75%"
-              ></button>
-            </td>
-          </tr>
-        </table>
-        <table
-          v-else
-          class="mx-auto w-full max-w-lg whitespace-nowrap animate-pulse"
-        >
-          <tr v-for="(row, i) in 4" :key="i">
-            <td v-for="(column, i) in 6" :key="i" class="px-0 lg:px-1">
-              <button
-                class="
-                  w-3/4
-                  bg-blue-light
-                  border-2 border-blue-light
-                  rounded-t-3xl rounded-b-lg
-                  pointer-events-none
-                "
-                style="padding-bottom: 75%"
-              ></button>
-            </td>
-          </tr>
-        </table>
+              <tr v-for="(row, i) in seats.plane.firstclassRowCount" :key="i">
+                <td
+                  v-for="(column, i) in seats.plane.firstclassColumncount"
+                  :key="i"
+                  class="px-0 lg:px-1 text-center"
+                >
+                  <button
+                    @click="onSeatSelectedFirst(row, column)"
+                    :class="classifierFirst(row, column)"
+                    class="w-3/4 border-2 border-blue-light rounded-t-3xl rounded-b-lg hover:border-blue"
+                    style="padding-bottom: 75%"
+                  ></button>
+                </td>
+              </tr>
+            </table>
+            <h1
+              class="w-full max-w-md mx-auto text-center mb-4 mt-8 border-t-2 border-blue-light"
+            >
+              Business
+            </h1>
+            <table
+              v-if="seats"
+              class="mx-auto w-full max-w-lg whitespace-nowrap"
+            >
+              <tr v-for="(row, i) in seats.plane.businessRowCount" :key="i">
+                <td
+                  v-for="(column, i) in seats.plane.businessColumncount"
+                  :key="i"
+                  class="px-0 lg:px-1 text-center"
+                >
+                  <button
+                    @click="onSeatSelectedBusiness(row, column)"
+                    :class="classifierBusiness(row, column)"
+                    class="w-3/4 border-2 border-blue-light rounded-t-3xl rounded-b-lg hover:border-blue"
+                    style="padding-bottom: 75%"
+                  ></button>
+                </td>
+              </tr>
+            </table>
+            <h1
+              class="w-full max-w-md mx-auto text-center mb-4 mt-8 border-t-2 border-blue-light"
+            >
+              Economy
+            </h1>
+            <table
+              v-if="seats"
+              class="mx-auto w-full max-w-lg whitespace-nowrap"
+            >
+              <tr v-for="(row, i) in seats.plane.economyRowCount" :key="i">
+                <td
+                  v-for="(column, i) in seats.plane.economyColumncount"
+                  :key="i"
+                  class="px-0 lg:px-1 text-center"
+                >
+                  <button
+                    @click="onSeatSelectedEconomy(row, column)"
+                    :class="classifierEconomy(row, column)"
+                    class="w-3/4 border-2 border-blue-light rounded-t-3xl rounded-b-lg hover:border-blue"
+                    style="padding-bottom: 75%"
+                  ></button>
+                </td>
+              </tr>
+            </table>
+          </div>
+          <div class="w-full mx-auto md:mx-0 max-w-sm mt-8">
+            <div
+              class="bg-blue-xlight border-2 border-blue-light rounded-2xl px-5 py-3 mx-auto sm:mx-0"
+            >
+              <div v-if="seats" class="leading-8">
+                <h1 class="text-2xl mb-4 font-bold">Summary</h1>
+
+                <p class="border-b-2 border-blue-light mb-4">
+                  {{ passengerCount }}x Passenger(s)
+                </p>
+                <div class="flex justify-between leading-6">
+                  <p>First Class seats</p>
+                  <p class="font-bold">
+                    €{{
+                      Math.floor(
+                        (calcPriceFC =
+                          seats.priceFirstClass * selectedSeatsFirst.length),
+                      )
+                    }}
+                  </p>
+                </div>
+                <div class="flex justify-between leading-6">
+                  <p>Business seats</p>
+                  <p class="font-bold">
+                    €{{
+                      Math.floor(
+                        (calcPriceBus =
+                          seats.priceBusiness * selectedSeatsBusiness.length),
+                      )
+                    }}
+                  </p>
+                </div>
+                <div class="flex justify-between leading-6 mb-4">
+                  <p>Economy seats</p>
+                  <p class="font-bold">
+                    €{{
+                      Math.floor(
+                        (calcPriceEco =
+                          seats.priceEconomy * selectedSeatsEconomy.length),
+                      )
+                    }}
+                  </p>
+                </div>
+                <div class="flex justify-between">
+                  <p>21% tax</p>
+                  <p class="font-bold">
+                    €{{
+                      Math.floor(
+                        (calcTax =
+                          (calcPriceFC + calcPriceBus + calcPriceEco) * 0.21),
+                      )
+                    }}
+                  </p>
+                </div>
+                <div class="flex justify-between">
+                  <p>Service fee</p>
+                  <p class="font-bold">€2</p>
+                </div>
+              </div>
+              <div
+                class="flex justify-between bg-blue-light px-3 py-2 mt-6 rounded-lg"
+              >
+                <p>Total</p>
+                <p class="font-bold">
+                  €{{
+                    Math.floor(
+                      calcPriceFC + calcPriceBus + calcPriceEco + calcTax + 2,
+                    )
+                  }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
         <button
-          v-if="selectedSeats.length == passengerCount"
-          @click="addBookedSeats()"
-          class="
-            bg-blue
-            text-white
-            px-4
-            py-3.5
-            rounded-xl
-            font-bold
-            focus:outline-none
-            focus-visible:ring
-            flex
-            relative
-            w-32
-            mx-auto
-            mt-12
-            items-center
-            hover:bg-blue-dark
-            transition-all
+          v-if="
+            selectedSeatsFirst.length +
+              selectedSeatsBusiness.length +
+              selectedSeatsEconomy.length ==
+            passengerCount
           "
+          @click="addBookedSeats()"
+          class="bg-blue text-white px-4 py-3.5 rounded-xl font-bold focus:outline-none focus-visible:ring flex relative w-32 mx-auto mt-12 items-center hover:bg-blue-dark transition-all"
         >
           FINISH
           <svg
-            class="
-              absolute
-              right-0
-              p-1
-              bg-blue-dark
-              hover:bg-blue
-              rounded
-              mr-4
-              w-6
-              fill-current
-              text-white
-              transition-all
-            "
+            class="absolute right-0 p-1 bg-blue-dark hover:bg-blue rounded mr-4 w-6 fill-current text-white transition-all"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
           >
@@ -333,37 +615,11 @@ export default defineComponent({
         </button>
         <button
           v-else
-          class="
-            bg-neutral-xlight
-            text-white
-            px-4
-            py-3.5
-            rounded-xl
-            font-bold
-            flex
-            relative
-            w-32
-            mx-auto
-            mt-12
-            items-center
-            transition-all
-            cursor-not-allowed
-          "
+          class="bg-neutral-xlight text-white px-4 py-3.5 rounded-xl font-bold flex relative w-32 mx-auto mt-12 items-center transition-all cursor-not-allowed"
         >
           FINISH
           <svg
-            class="
-              absolute
-              right-0
-              p-1
-              bg-neutral-xlight
-              rounded
-              mr-4
-              w-6
-              fill-current
-              text-white
-              transition-all
-            "
+            class="absolute right-0 p-1 bg-neutral-xlight rounded mr-4 w-6 fill-current text-white transition-all"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
           >

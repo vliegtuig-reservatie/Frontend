@@ -28,7 +28,6 @@ export default defineComponent({
           getFlightById (id: $id) {
             departureTime
             arrivalTime
-            price
             departureLocation {
               id
               name
@@ -40,8 +39,12 @@ export default defineComponent({
               IATACode
             }
             plane {
-                rowCount
-                columncount
+                businessRowCount
+                businessColumncount
+                firstclassRowCount
+                firstclassColumncount
+                economyRowCount
+                economyColumncount
             }
             bookedSeats {
                 id
@@ -72,20 +75,11 @@ export default defineComponent({
       <div
         v-if="
           flight.bookedSeats.length <
-          flight.plane.rowCount * flight.plane.columncount
+          flight.plane.firstclassRowCount * flight.plane.firstclassColumncount +
+            flight.plane.economyRowCount * flight.plane.economyColumncount +
+            flight.plane.businessRowCount * flight.plane.businessColumncount
         "
-        class="
-          relative
-          mx-auto
-          max-w-7xl
-          p-6
-          sm:p-8
-          -mt-20
-          rounded-3xl
-          bg-white
-          shadow
-          z-10
-        "
+        class="relative mx-auto max-w-7xl p-6 sm:p-8 -mt-20 rounded-3xl bg-white shadow z-10"
       >
         <div class="flex flex-col md:justify-between md:flex-row">
           <div class="w-full max-w-2xl">
@@ -107,31 +101,12 @@ export default defineComponent({
             </div>
             <h1 class="text-2xl mb-4 font-bold">Confirm your booking</h1>
             <div
-              class="
-                flex flex-col
-                gap-0
-                sm:gap-6 sm:flex-row
-                lg:gap-20
-                border-t-2 border-blue-light
-                mr-8
-              "
+              class="flex flex-col gap-0 sm:gap-6 sm:flex-row lg:gap-20 border-t-2 border-blue-light mr-8"
             >
               <div class="w-full max-w-xs mx-auto sm:mx-0">
                 <h2 class="text-lg font-bold py-4">Your flight</h2>
                 <div
-                  class="
-                    px-4
-                    py-3.5
-                    mb-4
-                    rounded-xl
-                    bg-blue-xlight
-                    border-2 border-blue-light
-                    text-neutral
-                    placeholder-neutral-xlight
-                    w-full
-                    min-w-max
-                    max-w-xs
-                  "
+                  class="px-4 py-3.5 mb-4 rounded-xl bg-blue-xlight border-2 border-blue-light text-neutral placeholder-neutral-xlight w-full min-w-max max-w-xs"
                 >
                   <p class="text-sm font-bold text-neutral-light">Departing</p>
                   <p>
@@ -155,19 +130,7 @@ export default defineComponent({
                   </p>
                 </div>
                 <div
-                  class="
-                    px-4
-                    py-3.5
-                    mb-4
-                    rounded-xl
-                    bg-blue-xlight
-                    border-2 border-blue-light
-                    text-neutral
-                    placeholder-neutral-xlight
-                    w-full
-                    min-w-max
-                    max-w-xs
-                  "
+                  class="px-4 py-3.5 mb-4 rounded-xl bg-blue-xlight border-2 border-blue-light text-neutral placeholder-neutral-xlight w-full min-w-max max-w-xs"
                 >
                   <p class="text-sm font-bold text-neutral-light">Arrival</p>
                   <p>
@@ -199,25 +162,17 @@ export default defineComponent({
                   <input
                     type="number"
                     id="passengers"
-                    class="
-                      px-4
-                      py-1
-                      rounded-xl
-                      bg-blue-xlight
-                      border-2 border-blue-light
-                      text-neutral
-                      placeholder-neutral-xlight
-                      w-16
-                      hover:border-blue
-                      focus:outline-none
-                      focus-visible:ring
-                      text-center
-                    "
+                    class="px-4 py-1 rounded-xl bg-blue-xlight border-2 border-blue-light text-neutral placeholder-neutral-xlight w-16 hover:border-blue focus:outline-none focus-visible:ring text-center"
                     v-model="passengerCount"
                     min="1"
                     required
                     :max="
-                      flight.plane.rowCount * flight.plane.columncount -
+                      flight.plane.firstclassRowCount *
+                        flight.plane.firstclassColumncount +
+                      flight.plane.economyRowCount *
+                        flight.plane.economyColumncount +
+                      flight.plane.businessRowCount *
+                        flight.plane.businessColumncount -
                       flight.bookedSeats.length
                     "
                     @input="
@@ -229,37 +184,10 @@ export default defineComponent({
                       passengerCount =
                         passengerCount === 1 ? 1 : passengerCount - 1
                     "
-                    class="
-                      bg-blue
-                      text-white
-                      px-2
-                      py-2
-                      mx-3
-                      rounded-full
-                      font-bold
-                      focus:outline-none
-                      focus-visible:ring
-                      flex
-                      relative
-                      col-span-2
-                      sm:col-span-1 sm:my-0
-                      items-center
-                      justify-center
-                      hover:bg-blue-dark
-                      transition-all
-                    "
+                    class="bg-blue text-white px-2 py-2 mx-3 rounded-full font-bold focus:outline-none focus-visible:ring flex relative col-span-2 sm:col-span-1 sm:my-0 items-center justify-center hover:bg-blue-dark transition-all"
                   >
                     <svg
-                      class="
-                        p-0.5
-                        bg-blue-dark
-                        hover:bg-blue
-                        rounded
-                        w-6
-                        fill-current
-                        text-white
-                        transition-all
-                      "
+                      class="p-0.5 bg-blue-dark hover:bg-blue rounded w-6 fill-current text-white transition-all"
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"
                     >
@@ -273,34 +201,10 @@ export default defineComponent({
                   </button>
                   <button
                     @click="passengerCount++"
-                    class="
-                      bg-blue
-                      text-white
-                      px-2
-                      py-2
-                      rounded-full
-                      font-bold
-                      focus:outline-none
-                      focus-visible:ring
-                      flex
-                      relative
-                      items-center
-                      justify-center
-                      hover:bg-blue-dark
-                      transition-all
-                    "
+                    class="bg-blue text-white px-2 py-2 rounded-full font-bold focus:outline-none focus-visible:ring flex relative items-center justify-center hover:bg-blue-dark transition-all"
                   >
                     <svg
-                      class="
-                        p-0.5
-                        bg-blue-dark
-                        hover:bg-blue
-                        rounded
-                        w-6
-                        fill-current
-                        text-white
-                        transition-all
-                      "
+                      class="p-0.5 bg-blue-dark hover:bg-blue rounded w-6 fill-current text-white transition-all"
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"
                     >
@@ -317,34 +221,29 @@ export default defineComponent({
             </div>
           </div>
           <div
-            class="
-              relative
-              w-full
-              max-w-sm
-              bg-blue-xlight
-              border-2 border-blue-light
-              rounded-2xl
-              px-5
-              py-3
-              flex flex-col
-              justify-between
-              mx-auto
-              sm:mx-0
-            "
+            class="relative w-full max-w-sm bg-blue-xlight border-2 border-blue-light rounded-2xl px-5 py-3 flex flex-col justify-between mx-auto sm:mx-0"
           >
             <div class="leading-8">
               <h1 class="text-2xl mb-4 font-bold">Summary</h1>
-              <div class="flex justify-between">
-                <p>{{ passengerCount }}x Passenger(s)</p>
-                <p class="font-bold">
-                  €{{ (pricePassengers = flight.price * passengerCount) }}
-                </p>
+
+              <p class="border-b-2 border-blue-light mb-4">
+                {{ passengerCount }}x Passenger(s)
+              </p>
+              <div class="flex justify-between leading-6">
+                <p>First Class seats</p>
+                <p class="font-bold">€0</p>
+              </div>
+              <div class="flex justify-between leading-6">
+                <p>Business seats</p>
+                <p class="font-bold">€0</p>
+              </div>
+              <div class="flex justify-between leading-6 mb-4">
+                <p>Economy seats</p>
+                <p class="font-bold">€0</p>
               </div>
               <div class="flex justify-between">
                 <p>21% tax</p>
-                <p class="font-bold">
-                  €{{ Math.floor((priceTax = pricePassengers * 0.21)) }}
-                </p>
+                <p class="font-bold">€0</p>
               </div>
               <div class="flex justify-between">
                 <p>Service fee</p>
@@ -355,46 +254,26 @@ export default defineComponent({
               class="flex justify-between bg-blue-light px-3 py-2 rounded-lg"
             >
               <p>Total</p>
-              <p class="font-bold">
-                €{{ Math.floor((totalPrice = pricePassengers + priceTax + 2)) }}
-              </p>
+              <p class="font-bold">€2</p>
             </div>
           </div>
         </div>
         <div
           v-if="
             passengerCount >
-            flight.plane.rowCount * flight.plane.columncount -
+            flight.plane.firstclassRowCount *
+              flight.plane.firstclassColumncount +
+              flight.plane.economyRowCount * flight.plane.economyColumncount +
+              flight.plane.businessRowCount * flight.plane.businessColumncount -
               flight.bookedSeats.length
           "
-          class="
-            bg-red-500
-            w-full
-            max-w-sm
-            py-3
-            px-4
-            rounded-lg
-            text-white
-            flex
-            mx-auto
-            mt-4
-            items-center
-          "
+          class="bg-red-500 w-full max-w-sm py-3 px-4 rounded-lg text-white flex mx-auto mt-4 items-center"
         >
           <div class="mr-4">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
-              class="
-                text-white
-                fill-current
-                bg-neutral-xlight
-                rounded-full
-                w-6
-                h-6
-                p-1
-                hover:bg-neutral-light
-              "
+              class="text-white fill-current bg-neutral-xlight rounded-full w-6 h-6 p-1 hover:bg-neutral-light"
             >
               <path d="M0 0h24v24H0V0z" fill="none" />
               <circle cx="12" cy="19" r="2" />
@@ -403,14 +282,21 @@ export default defineComponent({
           </div>
           <p
             v-if="
-              flight.plane.rowCount * flight.plane.columncount -
+              flight.plane.firstclassRowCount *
+                flight.plane.firstclassColumncount +
+                flight.plane.economyRowCount * flight.plane.economyColumncount +
+                flight.plane.businessRowCount *
+                  flight.plane.businessColumncount -
                 flight.bookedSeats.length ==
               1
             "
           >
             There is only
             {{
-              flight.plane.rowCount * flight.plane.columncount -
+              flight.plane.firstclassRowCount *
+                flight.plane.firstclassColumncount +
+              flight.plane.economyRowCount * flight.plane.economyColumncount +
+              flight.plane.businessRowCount * flight.plane.businessColumncount -
               flight.bookedSeats.length
             }}
             seat left on this flight!
@@ -418,7 +304,10 @@ export default defineComponent({
           <p v-else>
             There are only
             {{
-              flight.plane.rowCount * flight.plane.columncount -
+              flight.plane.firstclassRowCount *
+                flight.plane.firstclassColumncount +
+              flight.plane.economyRowCount * flight.plane.economyColumncount +
+              flight.plane.businessRowCount * flight.plane.businessColumncount -
               flight.bookedSeats.length
             }}
             seats left on this flight!
@@ -428,7 +317,11 @@ export default defineComponent({
           v-if="
             passengerCount > 0 &&
             passengerCount <=
-              flight.plane.rowCount * flight.plane.columncount -
+              flight.plane.firstclassRowCount *
+                flight.plane.firstclassColumncount +
+                flight.plane.economyRowCount * flight.plane.economyColumncount +
+                flight.plane.businessRowCount *
+                  flight.plane.businessColumncount -
                 flight.bookedSeats.length
           "
           :to="{
@@ -437,40 +330,11 @@ export default defineComponent({
               passengers: passengerCount,
             },
           }"
-          class="
-            bg-blue
-            text-white
-            px-4
-            py-3.5
-            rounded-xl
-            font-bold
-            focus:outline-none
-            focus-visible:ring
-            flex
-            relative
-            w-28
-            mx-auto
-            mt-12
-            items-center
-            hover:bg-blue-dark
-            transition-all
-          "
+          class="bg-blue text-white px-4 py-3.5 rounded-xl font-bold focus:outline-none focus-visible:ring flex relative w-28 mx-auto mt-12 items-center hover:bg-blue-dark transition-all"
         >
           NEXT
           <svg
-            class="
-              absolute
-              right-0
-              p-1
-              bg-blue-dark
-              hover:bg-blue
-              rounded
-              mr-4
-              w-6
-              fill-current
-              text-white
-              transition-all
-            "
+            class="absolute right-0 p-1 bg-blue-dark hover:bg-blue rounded mr-4 w-6 fill-current text-white transition-all"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
           >
@@ -482,37 +346,11 @@ export default defineComponent({
         </RouterLink>
         <button
           v-else
-          class="
-            bg-neutral-xlight
-            text-white
-            px-4
-            py-3.5
-            rounded-xl
-            font-bold
-            flex
-            relative
-            w-28
-            mx-auto
-            mt-12
-            items-center
-            transition-all
-            cursor-not-allowed
-          "
+          class="bg-neutral-xlight text-white px-4 py-3.5 rounded-xl font-bold flex relative w-28 mx-auto mt-12 items-center transition-all cursor-not-allowed"
         >
           NEXT
           <svg
-            class="
-              absolute
-              right-0
-              p-1
-              bg-neutral-xlight
-              rounded
-              mr-4
-              w-6
-              fill-current
-              text-white
-              transition-all
-            "
+            class="absolute right-0 p-1 bg-neutral-xlight rounded mr-4 w-6 fill-current text-white transition-all"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
           >
@@ -525,18 +363,7 @@ export default defineComponent({
       </div>
       <div
         v-else
-        class="
-          relative
-          mx-auto
-          max-w-7xl
-          p-6
-          sm:p-8
-          -mt-20
-          rounded-3xl
-          bg-white
-          shadow
-          z-10
-        "
+        class="relative mx-auto max-w-7xl p-6 sm:p-8 -mt-20 rounded-3xl bg-white shadow z-10"
       >
         <div class="flex">
           <div class="w-full">
@@ -561,36 +388,21 @@ export default defineComponent({
               <div
                 v-if="
                   passengerCount >
-                  flight.plane.rowCount * flight.plane.columncount -
+                  flight.plane.firstclassRowCount *
+                    flight.plane.firstclassColumncount +
+                    flight.plane.economyRowCount *
+                      flight.plane.economyColumncount +
+                    flight.plane.businessRowCount *
+                      flight.plane.businessColumncount -
                     flight.bookedSeats.length
                 "
-                class="
-                  bg-red-500
-                  w-full
-                  max-w-md
-                  py-3
-                  px-4
-                  rounded-lg
-                  text-white
-                  flex
-                  mt-4
-                  items-center
-                "
+                class="bg-red-500 w-full max-w-md py-3 px-4 rounded-lg text-white flex mt-4 items-center"
               >
                 <div class="mr-4">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
-                    class="
-                      text-white
-                      fill-current
-                      bg-neutral-xlight
-                      rounded-full
-                      w-6
-                      h-6
-                      p-1
-                      hover:bg-neutral-light
-                    "
+                    class="text-white fill-current bg-neutral-xlight rounded-full w-6 h-6 p-1 hover:bg-neutral-light"
                   >
                     <path d="M0 0h24v24H0V0z" fill="none" />
                     <circle cx="12" cy="19" r="2" />

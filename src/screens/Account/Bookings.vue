@@ -60,8 +60,8 @@ export default defineComponent({
               IATACode: a.flight.arrivalLocation.IATACode,
             },
             departureLocation: {
-              name: a.flight.arrivalLocation.name,
-              IATACode: a.flight.arrivalLocation.IATACode,
+              name: a.flight.departureLocation.name,
+              IATACode: a.flight.departureLocation.IATACode,
             },
             plane: {
               agency: a.flight.plane.agency,
@@ -86,18 +86,7 @@ export default defineComponent({
     <AppHeader />
     <div class="mx-4">
       <div
-        class="
-          relative
-          mx-auto
-          max-w-7xl
-          p-6
-          sm:p-8
-          -mt-20
-          rounded-3xl
-          bg-white
-          shadow
-          z-10
-        "
+        class="relative mx-auto max-w-7xl p-6 sm:p-8 -mt-20 rounded-3xl bg-white shadow z-10"
       >
         <div class="flex items-center text-sm -mt-4">
           <RouterLink to="/">Dashboard</RouterLink>
